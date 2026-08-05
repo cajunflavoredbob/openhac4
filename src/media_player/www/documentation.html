@@ -1,0 +1,32 @@
+<h1>Home Assistant Media Player (openhac4)</h1>
+<p>Transport, volume, source, and now-playing control of a Home Assistant
+media_player from Control4. This is a control and status device: it does
+<b>not</b> appear as a room "Listen" audio source.</p>
+
+<p>If you want the entity selectable as a room source, with browsing and a Now
+Playing screen, use <b>Home Assistant Media Source (openhac4)</b> instead. The
+two drivers can be used together on the same entity: this one for control and
+status, that one for the room source. Media Source is not created by Import
+Devices, so add it by hand when you want it. Import first and add Media Source
+second: Import Devices skips any entity already held by an openhac4 child, so a
+hand-added Media Source will hide that entity from the import.</p>
+<h2>Setup</h2>
+<ol>
+	<li>Add this driver; it finds the openhac4 gateway automatically.</li>
+	<li>Set <b>Entity</b> to the media_player entity, or type its id into
+	<b>Entity ID</b>. Use <b>Refresh Entity List</b> if it is not listed yet.</li>
+</ol>
+<h2>Actions / programming</h2>
+<ul>
+	<li>Transport: Play, Pause, Play/Pause, Stop, Next, Previous, Turn On/Off.</li>
+	<li>Volume: Volume Up/Down, Set Volume from 0 to 100, Mute/Unmute.</li>
+	<li>Select Source: pick from the entity's source list.</li>
+	<li>Events: Playing / Paused / Stopped / Offline. Variables: STATE,
+	MEDIA_TITLE, MEDIA_ARTIST, MEDIA_ALBUM, VOLUME, SOURCE, plus the HA_&lt;ATTRIBUTE&gt;
+	variables described below, such as <b>HA_APP_NAME</b>.</li>
+	<li>The driver also creates a read-only <b>HA_&lt;ATTRIBUTE&gt;</b> variable for each attribute the Home Assistant entity reports, named in upper case with non-alphanumeric characters replaced by underscores (an <code>app_name</code> attribute becomes <b>HA_APP_NAME</b>). A small set of metadata and high-churn attributes is skipped (friendly_name, icon, device_class, supported_features, attribution, entity_picture, and media position), and at most 100 are exposed per entity.</li>
+</ul>
+<h2>Changelog</h2>
+<ul>
+	<li>{{SEMVER}} - Initial public release</li>
+</ul>

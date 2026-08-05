@@ -1,0 +1,229 @@
+<devicedata>
+	<copyright>Copyright 2026 cajunflavoredbob. Licensed under the MIT License.</copyright>
+	<creator>cajunflavoredbob</creator>
+	<manufacturer>openhac4</manufacturer>
+	<name>Home Assistant Media Player (openhac4)</name>
+	<model>Home Assistant Media Player</model>
+	<created>08/03/2026 09:00 AM</created>
+	<modified>{{MODIFIED}}</modified>
+	<version>{{VERSION_INT}}</version>
+	<semver>{{SEMVER}}</semver>
+	<minimum_os_version>3.4.0</minimum_os_version>
+	<small image_source="c4z">icons/device_sm.png</small>
+	<large image_source="c4z">icons/device_lg.png</large>
+	<control>lua_gen</control>
+	<driver>DriverWorks</driver>
+	<combo>True</combo>
+	<config>
+		<script file="driver.lua" jit="1"/>
+		<properties>
+			<property>
+				<name>Driver Version</name>
+				<type>STRING</type>
+				<default></default>
+				<readonly>true</readonly>
+			</property>
+			<property>
+				<name>Gateway Status</name>
+				<type>STRING</type>
+				<default>Gateway Not Found</default>
+				<readonly>true</readonly>
+			</property>
+			<property>
+				<name>Entity Status</name>
+				<type>STRING</type>
+				<default>No Entity Selected</default>
+				<readonly>true</readonly>
+			</property>
+			<property>
+				<name>Current State</name>
+				<type>STRING</type>
+				<default></default>
+				<readonly>true</readonly>
+			</property>
+			<property>
+				<name>Now Playing</name>
+				<type>STRING</type>
+				<default></default>
+				<readonly>true</readonly>
+			</property>
+			<property>
+				<name>Volume</name>
+				<type>STRING</type>
+				<default></default>
+				<readonly>true</readonly>
+			</property>
+			<property>
+				<name>Entity</name>
+				<type>DYNAMIC_LIST</type>
+				<readonly>false</readonly>
+			</property>
+			<property>
+				<name>Entity ID</name>
+				<type>STRING</type>
+				<default></default>
+				<readonly>false</readonly>
+			</property>
+			<property>
+				<name>Debug</name>
+				<type>LIST</type>
+				<items>
+					<item>Off</item>
+					<item>On</item>
+				</items>
+				<default>Off</default>
+				<readonly>false</readonly>
+			</property>
+			<property>
+				<name>Log Mode</name>
+				<type>LIST</type>
+				<items>
+					<item>Off</item>
+					<item>Print</item>
+					<item>Log</item>
+					<item>Print and Log</item>
+				</items>
+				<default>Off</default>
+				<readonly>false</readonly>
+			</property>
+			<property>
+				<name>Log Level</name>
+				<type>LIST</type>
+				<items>
+					<item>0 - Alert</item>
+					<item>1 - Error</item>
+					<item>2 - Warning</item>
+					<item>3 - Info</item>
+					<item>4 - Trace</item>
+					<item>5 - Debug</item>
+				</items>
+				<default>2 - Warning</default>
+				<readonly>false</readonly>
+			</property>
+			<property>
+				<name>Log Auto Off Minutes</name>
+				<type>RANGED_INTEGER</type>
+				<minimum>1</minimum>
+				<maximum>1440</maximum>
+				<default>30</default>
+				<readonly>false</readonly>
+			</property>
+		</properties>
+		<actions>
+			<action><name>Refresh Entity List</name><command>RefreshEntityList</command></action>
+			<action><name>Play</name><command>Play</command></action>
+			<action><name>Pause</name><command>Pause</command></action>
+			<action><name>Play/Pause</name><command>Play_Pause</command></action>
+			<action><name>Stop</name><command>Stop</command></action>
+			<action><name>Next</name><command>Next</command></action>
+			<action><name>Previous</name><command>Previous</command></action>
+			<action><name>Turn On</name><command>Turn_On</command></action>
+			<action><name>Turn Off</name><command>Turn_Off</command></action>
+			<action><name>Volume Up</name><command>Volume_Up</command></action>
+			<action><name>Volume Down</name><command>Volume_Down</command></action>
+			<action><name>Mute</name><command>Mute</command></action>
+			<action><name>Unmute</name><command>Unmute</command></action>
+			<action>
+				<name>Set Volume</name>
+				<command>SetVolume</command>
+				<params>
+					<param>
+						<name>Volume</name>
+						<type>RANGED_INTEGER</type>
+						<minimum>0</minimum>
+						<maximum>100</maximum>
+						<default>30</default>
+					</param>
+				</params>
+			</action>
+			<action>
+				<name>Select Source</name>
+				<command>SelectSource</command>
+				<params>
+					<param>
+						<name>Source</name>
+						<type>CUSTOM_SELECT:GetMediaSources</type>
+					</param>
+				</params>
+			</action>
+		</actions>
+		<commands>
+			<command><name>Play</name><description>Play NAME</description></command>
+			<command><name>Pause</name><description>Pause NAME</description></command>
+			<command><name>Play Pause</name><description>Toggle play and pause on NAME</description></command>
+			<command><name>Stop</name><description>Stop NAME</description></command>
+			<command><name>Next</name><description>Next track on NAME</description></command>
+			<command><name>Previous</name><description>Previous track on NAME</description></command>
+			<command><name>Turn On</name><description>Turn NAME on</description></command>
+			<command><name>Turn Off</name><description>Turn NAME off</description></command>
+			<command><name>Volume Up</name><description>Raise NAME volume</description></command>
+			<command><name>Volume Down</name><description>Lower NAME volume</description></command>
+			<command><name>Mute</name><description>Mute NAME</description></command>
+			<command><name>Unmute</name><description>Unmute NAME</description></command>
+			<command>
+				<name>Set Volume</name>
+				<description>Set NAME volume to PARAM1</description>
+				<params>
+					<param>
+						<name>Volume</name>
+						<type>RANGED_INTEGER</type>
+						<minimum>0</minimum>
+						<maximum>100</maximum>
+						<default>30</default>
+					</param>
+				</params>
+			</command>
+			<command>
+				<name>Select Source</name>
+				<description>Set NAME source to PARAM1</description>
+				<params>
+					<param>
+						<name>Source</name>
+						<type>CUSTOM_SELECT:GetMediaSources</type>
+					</param>
+				</params>
+			</command>
+		</commands>
+		<documentation file="www/documentation.html"/>
+	</config>
+	<events>
+		<event>
+			<id>1</id>
+			<name>Playing</name>
+			<description>NAME started playing</description>
+		</event>
+		<event>
+			<id>2</id>
+			<name>Paused</name>
+			<description>NAME paused</description>
+		</event>
+		<event>
+			<id>3</id>
+			<name>Stopped</name>
+			<description>NAME stopped</description>
+		</event>
+		<event>
+			<id>4</id>
+			<name>Offline</name>
+			<description>NAME became unavailable</description>
+		</event>
+	</events>
+	<connections>
+		<connection>
+			<id>1</id>
+			<facing>6</facing>
+			<connectionname>openhac4 Gateway</connectionname>
+			<type>1</type>
+			<consumer>True</consumer>
+			<audiosource>False</audiosource>
+			<videosource>False</videosource>
+			<linelevel>False</linelevel>
+			<classes>
+				<class>
+					<classname>OPENHAC4</classname>
+				</class>
+			</classes>
+			<hidden>False</hidden>
+		</connection>
+	</connections>
+</devicedata>

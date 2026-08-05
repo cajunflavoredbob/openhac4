@@ -1,0 +1,39 @@
+<h1>Home Assistant Lock (openhac4)</h1>
+
+<p>Presents a Home Assistant lock entity in Control4 as a native lock, with
+lock/unlock control and status in navigators and programming. Requires the
+openhac4 Gateway driver, installed and connected.</p>
+
+<h2>Setup</h2>
+<ol>
+	<li>Install and connect the Home Assistant Gateway (openhac4) driver
+	first.</li>
+	<li>Add this driver, or let the gateway's Import Devices add it.</li>
+	<li>Pick the lock entity from the <b>Entity</b> dropdown, or type the entity id into <b>Entity ID</b>. Run <b>Refresh
+	Entity List</b> if the dropdown is empty.</li>
+</ol>
+
+<h2>Programming</h2>
+<ul>
+	<li>Commands: Lock, Unlock, Toggle.</li>
+	<li>Events: Locked, Unlocked, Jammed, Offline.</li>
+	<li>Variable: LOCK_STATE, one of locked, unlocked, unknown, or fault.</li>
+	<li>The driver also creates a read-only <b>HA_&lt;ATTRIBUTE&gt;</b> variable for each attribute the Home Assistant entity reports, named in upper case with non-alphanumeric characters replaced by underscores (an <code>app_name</code> attribute becomes <b>HA_APP_NAME</b>). A small set of metadata and high-churn attributes is skipped (friendly_name, icon, device_class, supported_features, attribution, entity_picture, and media position), and at most 100 are exposed per entity.</li>
+</ul>
+
+<h2>Troubleshooting</h2>
+<ul>
+	<li><b>Gateway Not Found</b>: add and connect the openhac4 Gateway driver
+	first.</li>
+	<li><b>Entity list empty</b>: the gateway is not connected to Home
+	Assistant yet, or has no entities of this type. Check the gateway's
+	Connection Status, then run <b>Refresh Entity List</b>.</li>
+	<li><b>State stuck on Unavailable</b>: the entity is unavailable in Home
+	Assistant, or the selected entity id does not exist. A typo produces the
+	same result. Confirm the entity id against Home Assistant.</li>
+</ul>
+
+<h2>Changelog</h2>
+<ul>
+	<li>{{SEMVER}} - Initial public release</li>
+</ul>

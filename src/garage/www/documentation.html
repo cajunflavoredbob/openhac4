@@ -1,0 +1,31 @@
+<h1>Home Assistant Garage Door (openhac4)</h1>
+<p>Presents a Home Assistant garage cover, a <code>cover</code> entity with
+device_class <b>garage</b>, as the classic Control4 garage building block: a
+momentary <b>Relay</b> plus a <b>Closed Sensor</b> and an <b>Open Sensor</b>.</p>
+<h2>Setup</h2>
+<ol>
+	<li>Add this driver; it finds the openhac4 gateway automatically.</li>
+	<li>Set <b>Entity</b> to the garage cover entity.</li>
+	<li>Add Control4's stock <b>Garage Door</b> driver and bind its relay and its
+	two contact inputs to this driver's <b>Relay</b>, <b>Closed Sensor</b>, and
+	<b>Open Sensor</b> connections. That stock driver provides the garage tile.</li>
+</ol>
+<h2>Notes</h2>
+<ul>
+	<li>The relay is treated as momentary: a pulse toggles the door in Home
+	Assistant. The contacts report position; while in transit, both read open.</li>
+	<li>Open, Close, Stop, and Toggle are available as actions and as programming
+	commands.</li>
+</ul>
+<h2>Programming</h2>
+<ul>
+	<li>Events: <b>Opened</b>, <b>Closed</b>, and <b>Offline</b>.</li>
+	<li><b>Entity ID</b> accepts a manually typed entity id if the <b>Entity</b>
+	picker is empty; <b>Refresh Entity List</b> repopulates the picker.</li>
+	<li>The driver also creates a read-only <b>HA_&lt;ATTRIBUTE&gt;</b> variable for each attribute the Home Assistant entity reports, named in upper case with non-alphanumeric characters replaced by underscores (an <code>app_name</code> attribute becomes <b>HA_APP_NAME</b>). A small set of metadata and high-churn attributes is skipped (friendly_name, icon, device_class, supported_features, attribution, entity_picture, and media position), and at most 100 are exposed per entity.</li>
+</ul>
+
+<h2>Changelog</h2>
+<ul>
+	<li>{{SEMVER}} - Initial public release</li>
+</ul>

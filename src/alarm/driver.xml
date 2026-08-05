@@ -1,0 +1,195 @@
+<devicedata>
+	<copyright>Copyright 2026 cajunflavoredbob. Licensed under the MIT License.</copyright>
+	<creator>cajunflavoredbob</creator>
+	<manufacturer>openhac4</manufacturer>
+	<name>Home Assistant Alarm (openhac4)</name>
+	<model>Home Assistant Alarm Control Panel</model>
+	<created>08/02/2026 09:00 AM</created>
+	<modified>{{MODIFIED}}</modified>
+	<version>{{VERSION_INT}}</version>
+	<semver>{{SEMVER}}</semver>
+	<minimum_os_version>3.4.0</minimum_os_version>
+	<small image_source="c4z">icons/device_sm.png</small>
+	<large image_source="c4z">icons/device_lg.png</large>
+	<control>lua_gen</control>
+	<driver>DriverWorks</driver>
+	<config>
+		<script file="driver.lua" jit="1"/>
+		<properties>
+			<property>
+				<name>Driver Version</name>
+				<type>STRING</type>
+				<default></default>
+				<readonly>true</readonly>
+			</property>
+			<property>
+				<name>Gateway Status</name>
+				<type>STRING</type>
+				<default>Gateway Not Found</default>
+				<readonly>true</readonly>
+			</property>
+			<property>
+				<name>Entity Status</name>
+				<type>STRING</type>
+				<default>No Entity Selected</default>
+				<readonly>true</readonly>
+			</property>
+			<property>
+				<name>Alarm Panel State</name>
+				<type>STRING</type>
+				<default></default>
+				<readonly>true</readonly>
+			</property>
+			<property>
+				<name>Entity</name>
+				<type>DYNAMIC_LIST</type>
+				<readonly>false</readonly>
+			</property>
+			<property>
+				<name>Entity ID</name>
+				<type>STRING</type>
+				<default></default>
+				<readonly>false</readonly>
+			</property>
+			<property>
+				<name>Debug</name>
+				<type>LIST</type>
+				<items>
+					<item>Off</item>
+					<item>On</item>
+				</items>
+				<default>Off</default>
+				<readonly>false</readonly>
+			</property>
+			<property>
+				<name>Log Mode</name>
+				<type>LIST</type>
+				<items>
+					<item>Off</item>
+					<item>Print</item>
+					<item>Log</item>
+					<item>Print and Log</item>
+				</items>
+				<default>Off</default>
+				<readonly>false</readonly>
+			</property>
+			<property>
+				<name>Log Level</name>
+				<type>LIST</type>
+				<items>
+					<item>0 - Alert</item>
+					<item>1 - Error</item>
+					<item>2 - Warning</item>
+					<item>3 - Info</item>
+					<item>4 - Trace</item>
+					<item>5 - Debug</item>
+				</items>
+				<default>2 - Warning</default>
+				<readonly>false</readonly>
+			</property>
+			<property>
+				<name>Log Auto Off Minutes</name>
+				<type>RANGED_INTEGER</type>
+				<minimum>1</minimum>
+				<maximum>1440</maximum>
+				<default>30</default>
+				<readonly>false</readonly>
+			</property>
+		</properties>
+		<actions>
+			<action>
+				<name>Refresh Entity List</name>
+				<command>RefreshEntityList</command>
+			</action>
+		</actions>
+		<documentation file="www/documentation.html"/>
+	</config>
+	<proxies qty="2">
+		<proxy proxybindingid="5001" name="Home Assistant Alarm (openhac4)">securitypanel</proxy>
+		<proxy proxybindingid="5002" name="Home Assistant Alarm Partition (openhac4)">security</proxy>
+	</proxies>
+	<capabilities>
+		<can_set_time>false</can_set_time>
+		<can_activate_partitions>false</can_activate_partitions>
+		<ui_version>2</ui_version>
+		<arm_states>Home,Away,Night,Vacation,Custom Bypass</arm_states>
+		<supports_virtual_keypad>false</supports_virtual_keypad>
+	</capabilities>
+	<composer_categories>
+		<category>Security</category>
+	</composer_categories>
+	<events>
+		<event>
+			<id>1</id>
+			<name>State Unavailable</name>
+			<description>NAME became unavailable</description>
+		</event>
+	</events>
+	<connections>
+		<connection>
+			<id>5001</id>
+			<facing>6</facing>
+			<connectionname>Security Panel</connectionname>
+			<type>2</type>
+			<consumer>False</consumer>
+			<audiosource>False</audiosource>
+			<videosource>False</videosource>
+			<linelevel>False</linelevel>
+			<classes>
+				<class>
+					<classname>SECURITY_PANEL</classname>
+				</class>
+			</classes>
+			<hidden>False</hidden>
+		</connection>
+		<connection>
+			<id>5002</id>
+			<facing>6</facing>
+			<connectionname>Partition</connectionname>
+			<type>2</type>
+			<consumer>False</consumer>
+			<audiosource>False</audiosource>
+			<videosource>False</videosource>
+			<linelevel>False</linelevel>
+			<classes>
+				<class>
+					<classname>SECURITY</classname>
+				</class>
+			</classes>
+			<hidden>False</hidden>
+		</connection>
+		<connection proxybindingid="5002">
+			<id>7002</id>
+			<facing>6</facing>
+			<connectionname>Security System</connectionname>
+			<type>7</type>
+			<consumer>False</consumer>
+			<audiosource>False</audiosource>
+			<videosource>False</videosource>
+			<linelevel>False</linelevel>
+			<classes>
+				<class>
+					<classname>SECURITY_SYSTEM</classname>
+					<autobind>True</autobind>
+				</class>
+			</classes>
+			<hidden>False</hidden>
+		</connection>
+		<connection>
+			<id>1</id>
+			<facing>6</facing>
+			<connectionname>openhac4 Gateway</connectionname>
+			<type>1</type>
+			<consumer>True</consumer>
+			<audiosource>False</audiosource>
+			<videosource>False</videosource>
+			<linelevel>False</linelevel>
+			<classes>
+				<class>
+					<classname>OPENHAC4</classname>
+				</class>
+			</classes>
+			<hidden>False</hidden>
+		</connection>
+	</connections>
+</devicedata>

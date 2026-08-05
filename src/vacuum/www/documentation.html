@@ -1,0 +1,60 @@
+<h1>Home Assistant Vacuum (openhac4)</h1>
+
+<p>Presents a Home Assistant vacuum entity in Control4 as an experience button.
+Tapping the button toggles between cleaning and returning to the dock. The full
+command set is available to programming. Requires the openhac4 Gateway driver,
+installed and connected.</p>
+
+<h2>Setup</h2>
+<ol>
+	<li>Install and connect the Home Assistant Gateway (openhac4) driver
+	first.</li>
+	<li>Add this driver, or let the gateway's Import Devices add it.</li>
+	<li>Pick the vacuum entity from the <b>Entity</b> dropdown, or type the
+	entity id into <b>Entity ID</b>. Run <b>Refresh Entity List</b> if the
+	dropdown is empty.</li>
+</ol>
+
+<h2>Programming</h2>
+<ul>
+	<li>Commands: Start, Pause, Stop, Return to Dock, Locate, Set Fan Speed, and
+	Send Command. All seven are available in Programming. The <b>Set Fan Speed</b> picker lists the speeds the entity itself reports, so
+	the names match your vacuum (Silent/Balanced/Turbo on one brand, low/medium/high
+	on another). It fills in once the driver has received a state.</li>
+	<li><b>Send Command</b> passes a raw command to the vacuum's integration
+	through the Home Assistant send_command service. Set <b>Command</b> to the
+	command name and <b>Params</b> to an optional JSON object of arguments. This
+	drives room, zone, and segment cleaning on vacuums that support it. The exact
+	command and params depend on the integration. For example, a vacuum might use
+	Command <code>segment_cleaning</code> with Params
+	<code>{"segment_ids":[1,2]}</code> to clean two rooms.</li>
+	<li>Events: Started Cleaning, Docked, Returning, Paused, Error, Offline.</li>
+	<li>Variables: VACUUM_STATE, FAN_SPEED, BATTERY_LEVEL.</li>
+	<li>The driver also creates a read-only <b>HA_&lt;ATTRIBUTE&gt;</b> variable for each attribute the Home Assistant entity reports, named in upper case with non-alphanumeric characters replaced by underscores (an <code>app_name</code> attribute becomes <b>HA_APP_NAME</b>). A small set of metadata and high-churn attributes is skipped (friendly_name, icon, device_class, supported_features, attribution, entity_picture, and media position), and at most 100 are exposed per entity.</li>
+	<li>Tapping the experience button starts cleaning when idle or docked, and
+	sends the vacuum back to the dock while it is cleaning.</li>
+</ul>
+
+<h2>Notes</h2>
+<ul>
+	<li>Battery is populated only if the vacuum entity reports battery_level.
+	Some integrations, such as Valetudo, expose battery as a separate sensor
+	entity instead, which you can add with the Sensor driver.</li>
+</ul>
+
+<h2>Troubleshooting</h2>
+<ul>
+	<li><b>Gateway Not Found</b>: add and connect the openhac4 Gateway driver
+	first.</li>
+	<li><b>Entity list empty</b>: the gateway is not connected to Home Assistant
+	yet, or has no entities of this type. Check the gateway's Connection Status,
+	then run <b>Refresh Entity List</b>.</li>
+	<li><b>State stuck on Unavailable</b>: the entity is unavailable in Home
+	Assistant, or the selected entity id does not exist. A typo produces the same
+	result. Confirm the entity id against Home Assistant.</li>
+</ul>
+
+<h2>Changelog</h2>
+<ul>
+	<li>{{SEMVER}} - Initial public release</li>
+</ul>

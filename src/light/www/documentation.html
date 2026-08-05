@@ -1,0 +1,58 @@
+<h1>Home Assistant Light (openhac4)</h1>
+
+<p>Presents a Home Assistant light entity in Control4 as a native dimmable
+light through the light_v2 proxy, with brightness, color, and color temperature. The
+driver detects the entity's capabilities from Home Assistant and adapts:
+an on/off-only light behaves as a switch, a dimmer exposes brightness, and
+color or tunable-white lights expose the color and color-temperature
+controls. Requires the openhac4 Gateway driver, installed and connected.</p>
+
+<h2>Setup</h2>
+<ol>
+	<li>Install and connect the Home Assistant Gateway (openhac4) driver
+	first.</li>
+	<li>Add this driver, or let the gateway's Import Devices add it.</li>
+	<li>Pick the light entity in the <b>Entity</b> property. Run <b>Refresh
+	Entity List</b> if it is empty. <b>Entity ID</b> accepts a manually
+	typed entity id.</li>
+	<li>The light appears in the Lighting experience and follows Home
+	Assistant in real time.</li>
+</ol>
+
+<h2>Capabilities</h2>
+<p>The <b>Detected Capabilities</b> property shows what was found for the
+selected entity: on/off, dim, cct, or color. Because Control4 declares a
+light's capabilities at load time, this driver advertises the full color
+feature set, the same approach Control4's own Hue driver uses; the color
+controls have no effect on lights that do not support color.</p>
+
+<h2>Programming</h2>
+<ul>
+	<li>Control the light from the Lighting experience and programming: on,
+	off, level, and, where the entity supports it, color and color
+	temperature.</li>
+	<li>Event: Offline, when the entity becomes unavailable.</li>
+	<li><b>Detected Capabilities</b> and <b>Current Level</b> properties
+	reflect the entity's abilities and current brightness.</li>
+	<li><b>Color Mode</b> sets the colour space used when sending a colour:
+	<b>Auto</b> (the default) sends CIE xy, <b>XY</b> is a synonym for Auto, and
+	<b>RGB</b> or <b>HS</b> force that space instead for lights that ignore xy.</li>
+	<li>The driver also creates a read-only <b>HA_&lt;ATTRIBUTE&gt;</b> variable for each attribute the Home Assistant entity reports, named in upper case with non-alphanumeric characters replaced by underscores (an <code>app_name</code> attribute becomes <b>HA_APP_NAME</b>). A small set of metadata and high-churn attributes is skipped (friendly_name, icon, device_class, supported_features, attribution, entity_picture, and media position), and at most 100 are exposed per entity.</li>
+</ul>
+
+<h2>Troubleshooting</h2>
+<ul>
+	<li><b>Gateway Not Found</b>: add and connect the gateway driver first.</li>
+	<li><b>Color control does nothing</b>: first check <b>Detected
+	Capabilities</b> to confirm the entity reports colour at all. If it does but
+	colour still has no effect, the light is rejecting the CIE xy values the
+	driver sends by default; set the <b>Color Mode</b> property to <b>RGB</b> or
+	<b>HS</b> to address it in that colour space instead.</li>
+	<li><b>Brightness looks off by a step</b>: Home Assistant uses 0-255 and
+	Control4 uses 0-100, so values are rounded when converted.</li>
+</ul>
+
+<h2>Changelog</h2>
+<ul>
+	<li>{{SEMVER}} - Initial public release</li>
+</ul>

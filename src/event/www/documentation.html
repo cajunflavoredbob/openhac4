@@ -1,0 +1,42 @@
+<h1>Home Assistant Event (openhac4)</h1>
+
+<p>Surfaces a Home Assistant <b>event</b> entity, a stateless input such as a
+button or remote press, to Control4 programming. It has no navigator
+presence; it exists purely to drive programming.</p>
+
+<h2>Setup</h2>
+<ol>
+	<li>Add this driver to the project. It finds the openhac4 gateway
+	automatically.</li>
+	<li>Set <b>Entity</b> to the Home Assistant event entity, or type its id
+	into <b>Entity ID</b>. Use <b>Refresh Entity List</b> if it is not listed
+	yet.</li>
+	<li>A Control4 programming event is created for each event type the entity
+	reports, for example <i>Single Press</i>, <i>Double Press</i>, or <i>Hold</i>.
+	<b>Detected Event Types</b> shows what was found.</li>
+</ol>
+
+<h2>Programming</h2>
+<p>Under this driver's events you will see one event per detected type. Program
+against them directly, for example "When <i>Double Press</i> then...".
+<b>Last Event Type</b> shows the most recent event, and <b>State
+Unavailable</b> fires if Home Assistant marks the entity unavailable.</p>
+<ul>
+	<li>The driver also creates a read-only <b>HA_&lt;ATTRIBUTE&gt;</b> variable for each attribute the Home Assistant entity reports, named in upper case with non-alphanumeric characters replaced by underscores (an <code>app_name</code> attribute becomes <b>HA_APP_NAME</b>). A small set of metadata and high-churn attributes is skipped (friendly_name, icon, device_class, supported_features, attribution, entity_picture, and media position), and at most 100 are exposed per entity.</li>
+	<li>At most 64 event types are exposed as Control4 events for one entity.</li>
+</ul>
+
+<h2>Troubleshooting</h2>
+<ul>
+	<li>No events listed: the event types come from the entity's own
+	<code>event_types</code> attribute, so confirm the entity is an
+	<code>event</code> domain entity and that its state has reached the driver.
+	Check <b>Gateway Status</b> and <b>Entity Status</b> first.</li>
+	<li>Set <b>Debug</b> to On to reveal the logging controls if you need a
+	trace of incoming events.</li>
+</ul>
+
+<h2>Changelog</h2>
+<ul>
+	<li>{{SEMVER}} - Initial public release</li>
+</ul>

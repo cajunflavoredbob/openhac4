@@ -1,0 +1,340 @@
+<devicedata>
+	<copyright>Copyright 2026 cajunflavoredbob. Licensed under the MIT License.</copyright>
+	<creator>cajunflavoredbob</creator>
+	<manufacturer>openhac4</manufacturer>
+	<name>Home Assistant Media Source (openhac4)</name>
+	<model>Home Assistant Media Source</model>
+	<created>08/03/2026 06:00 PM</created>
+	<modified>{{MODIFIED}}</modified>
+	<version>{{VERSION_INT}}</version>
+	<semver>{{SEMVER}}</semver>
+	<minimum_os_version>3.4.0</minimum_os_version>
+	<small image_source="c4z">icons/device_sm.png</small>
+	<large image_source="c4z">icons/device_lg.png</large>
+	<control>lua_gen</control>
+	<driver>DriverWorks</driver>
+	<combo>True</combo>
+	<config>
+		<script file="driver.lua" jit="1"/>
+		<documentation file="www/documentation.html"/>
+		<properties>
+			<property>
+				<name>Driver Version</name>
+				<type>STRING</type>
+				<default></default>
+				<readonly>true</readonly>
+			</property>
+			<property>
+				<name>Gateway Status</name>
+				<type>STRING</type>
+				<default>Gateway Not Found</default>
+				<readonly>true</readonly>
+			</property>
+			<property>
+				<name>Entity Status</name>
+				<type>STRING</type>
+				<default>No Entity Selected</default>
+				<readonly>true</readonly>
+			</property>
+			<property>
+				<name>Current State</name>
+				<type>STRING</type>
+				<default></default>
+				<readonly>true</readonly>
+			</property>
+			<property>
+				<name>Now Playing</name>
+				<type>STRING</type>
+				<default></default>
+				<readonly>true</readonly>
+			</property>
+			<property>
+				<name>Entity</name>
+				<type>DYNAMIC_LIST</type>
+				<readonly>false</readonly>
+			</property>
+			<property>
+				<name>Entity ID</name>
+				<type>STRING</type>
+				<default></default>
+				<readonly>false</readonly>
+			</property>
+			<property>
+				<name>Debug</name>
+				<type>LIST</type>
+				<items>
+					<item>Off</item>
+					<item>On</item>
+				</items>
+				<default>Off</default>
+				<readonly>false</readonly>
+			</property>
+			<property>
+				<name>Log Mode</name>
+				<type>LIST</type>
+				<items>
+					<item>Off</item>
+					<item>Print</item>
+					<item>Log</item>
+					<item>Print and Log</item>
+				</items>
+				<default>Off</default>
+				<readonly>false</readonly>
+			</property>
+			<property>
+				<name>Log Level</name>
+				<type>LIST</type>
+				<items>
+					<item>0 - Alert</item>
+					<item>1 - Error</item>
+					<item>2 - Warning</item>
+					<item>3 - Info</item>
+					<item>4 - Trace</item>
+					<item>5 - Debug</item>
+				</items>
+				<default>2 - Warning</default>
+				<readonly>false</readonly>
+			</property>
+			<property>
+				<name>Log Auto Off Minutes</name>
+				<type>RANGED_INTEGER</type>
+				<minimum>1</minimum>
+				<maximum>1440</maximum>
+				<default>30</default>
+				<readonly>false</readonly>
+			</property>
+		</properties>
+		<actions>
+			<action><name>Refresh Entity List</name><command>RefreshEntityList</command></action>
+		</actions>
+	</config>
+	<capabilities>
+		<hide_in_media>True</hide_in_media>
+		<ui_selects_device>True</ui_selects_device>
+		<digital_audio_support>False</digital_audio_support>
+		<list_nowplaying_non_c4>True</list_nowplaying_non_c4>
+		<has_discrete_volume_control>True</has_discrete_volume_control>
+		<has_discrete_mute_control>True</has_discrete_mute_control>
+		<has_up_down_volume_control>True</has_up_down_volume_control>
+		<UI xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" proxybindingid="5001">
+			<DeviceIcon>device</DeviceIcon>
+			<BrandingIcon>device</BrandingIcon>
+			<Icons>
+				<IconGroup id="device">
+					<Icon width="70" height="70">controller://driver/openhac4_media_source/icons/dev_70.png</Icon>
+					<Icon width="90" height="90">controller://driver/openhac4_media_source/icons/dev_90.png</Icon>
+					<Icon width="150" height="150">controller://driver/openhac4_media_source/icons/dev_150.png</Icon>
+					<Icon width="300" height="300">controller://driver/openhac4_media_source/icons/dev_300.png</Icon>
+					<Icon width="512" height="512">controller://driver/openhac4_media_source/icons/dev_512.png</Icon>
+				</IconGroup>
+				<IconGroup id="np_shuffle">
+					<Icon width="70" height="70">controller://driver/openhac4_media_source/icons/np_shuffle_70.png</Icon>
+					<Icon width="90" height="90">controller://driver/openhac4_media_source/icons/np_shuffle_90.png</Icon>
+					<Icon width="140" height="140">controller://driver/openhac4_media_source/icons/np_shuffle_140.png</Icon>
+				</IconGroup>
+				<IconGroup id="np_shuffle_a">
+					<Icon width="70" height="70">controller://driver/openhac4_media_source/icons/np_shuffle_a_70.png</Icon>
+					<Icon width="90" height="90">controller://driver/openhac4_media_source/icons/np_shuffle_a_90.png</Icon>
+					<Icon width="140" height="140">controller://driver/openhac4_media_source/icons/np_shuffle_a_140.png</Icon>
+				</IconGroup>
+				<IconGroup id="np_repeat">
+					<Icon width="70" height="70">controller://driver/openhac4_media_source/icons/np_repeat_70.png</Icon>
+					<Icon width="90" height="90">controller://driver/openhac4_media_source/icons/np_repeat_90.png</Icon>
+					<Icon width="140" height="140">controller://driver/openhac4_media_source/icons/np_repeat_140.png</Icon>
+				</IconGroup>
+				<IconGroup id="np_repeat_a">
+					<Icon width="70" height="70">controller://driver/openhac4_media_source/icons/np_repeat_a_70.png</Icon>
+					<Icon width="90" height="90">controller://driver/openhac4_media_source/icons/np_repeat_a_90.png</Icon>
+					<Icon width="140" height="140">controller://driver/openhac4_media_source/icons/np_repeat_a_140.png</Icon>
+				</IconGroup>
+			</Icons>
+			<Tabs>
+				<Tab>
+					<Id>Browse</Id>
+					<Name>Browse</Name>
+					<IconId>device</IconId>
+					<ScreenId>browse</ScreenId>
+				</Tab>
+			</Tabs>
+			<Screens>
+				<Screen xsi:type="ListScreenType">
+					<Id>browse</Id>
+					<DataCommand>
+						<Name>Browse</Name>
+						<Type>PROTOCOL</Type>
+						<Params>
+							<Param><Name>screenId</Name><Type>SYSTEM</Type><Value>screenId</Value></Param>
+							<Param><Name>tabId</Name><Type>SYSTEM</Type><Value>tabId</Value></Param>
+							<Param><Name>screenDepth</Name><Type>SYSTEM</Type><Value>screenDepth</Value></Param>
+							<Param><Name>id</Name><Type>FIRST_SELECTED</Type><Value>id</Value></Param>
+							<Param><Name>itemType</Name><Type>FIRST_SELECTED</Type><Value>itemType</Value></Param>
+						</Params>
+					</DataCommand>
+					<PaginationStyle>NONE</PaginationStyle>
+					<List>
+						<ItemDefaultActionProperty>default_action</ItemDefaultActionProperty>
+						<ItemActionIdsProperty>actions_list</ItemActionIdsProperty>
+						<TitleProperty>title</TitleProperty>
+						<SubTitleProperty>subtitle</SubTitleProperty>
+						<ImageProperty>image_list</ImageProperty>
+						<LengthProperty>duration</LengthProperty>
+						<IsLink>
+							<Property>isLink</Property>
+							<ValidValues><Value>true</Value></ValidValues>
+						</IsLink>
+						<IsHeader>
+							<Property>isHeader</Property>
+							<ValidValues><Value>true</Value></ValidValues>
+						</IsHeader>
+					</List>
+				</Screen>
+			</Screens>
+			<NowPlaying>
+				<ActionIds>Shuffle Repeat</ActionIds>
+				<List>
+					<TitleProperty>title</TitleProperty>
+					<SubTitleProperty>subtitle</SubTitleProperty>
+					<ImageProperty>image_list</ImageProperty>
+					<LengthProperty>duration</LengthProperty>
+					<IsHeader>
+						<Property>isHeader</Property>
+						<ValidValues><Value>true</Value></ValidValues>
+					</IsHeader>
+				</List>
+			</NowPlaying>
+			<Actions>
+				<Action>
+					<Id>SelectItem</Id>
+					<Name>Select</Name>
+					<Command>
+						<Name>SelectItem</Name>
+						<Type>PROTOCOL</Type>
+						<Params>
+							<Param><Name>screenId</Name><Type>SYSTEM</Type><Value>screenId</Value></Param>
+							<Param><Name>tabId</Name><Type>SYSTEM</Type><Value>tabId</Value></Param>
+							<Param><Name>screenDepth</Name><Type>SYSTEM</Type><Value>screenDepth</Value></Param>
+							<Param><Name>id</Name><Type>FIRST_SELECTED</Type><Value>id</Value></Param>
+							<Param><Name>itemType</Name><Type>FIRST_SELECTED</Type><Value>itemType</Value></Param>
+							<Param><Name>nav</Name><Type>FIRST_SELECTED</Type><Value>nav</Value></Param>
+						</Params>
+					</Command>
+				</Action>
+				<Action>
+					<Id>Shuffle</Id>
+					<Name>Turn Shuffle On</Name>
+					<IconId>np_shuffle</IconId>
+					<Command>
+						<Name>ToggleShuffle</Name>
+						<Type>PROTOCOL</Type>
+					</Command>
+					<Filters>
+						<Filter>
+							<Type>Disable</Type>
+							<Property>can_shuffle</Property>
+							<ValidValues><Value>false</Value></ValidValues>
+						</Filter>
+						<Filter>
+							<Type>Change</Type>
+							<Property>shufflemode</Property>
+							<Name>Turn Shuffle Off</Name>
+							<IconId>np_shuffle_a</IconId>
+							<ValidValues><Value>true</Value></ValidValues>
+						</Filter>
+					</Filters>
+				</Action>
+				<Action>
+					<Id>Repeat</Id>
+					<Name>Turn Repeat On</Name>
+					<IconId>np_repeat</IconId>
+					<Command>
+						<Name>ToggleRepeat</Name>
+						<Type>PROTOCOL</Type>
+					</Command>
+					<Filters>
+						<Filter>
+							<Type>Disable</Type>
+							<Property>can_repeat</Property>
+							<ValidValues><Value>false</Value></ValidValues>
+						</Filter>
+						<Filter>
+							<Type>Change</Type>
+							<Property>repeatmode</Property>
+							<Name>Turn Repeat Off</Name>
+							<IconId>np_repeat_a</IconId>
+							<ValidValues><Value>true</Value></ValidValues>
+						</Filter>
+					</Filters>
+				</Action>
+			</Actions>
+			<Dashboard>
+				<Transport>
+					<Id>Play</Id>
+					<ButtonType>PLAY</ButtonType>
+					<ReleaseCommand><Name>PLAY</Name><Type>PROTOCOL</Type></ReleaseCommand>
+				</Transport>
+				<Transport>
+					<Id>Pause</Id>
+					<ButtonType>PAUSE</ButtonType>
+					<ReleaseCommand><Name>PAUSE</Name><Type>PROTOCOL</Type></ReleaseCommand>
+				</Transport>
+				<Transport>
+					<Id>Stop</Id>
+					<ButtonType>STOP</ButtonType>
+					<ReleaseCommand><Name>STOP</Name><Type>PROTOCOL</Type></ReleaseCommand>
+				</Transport>
+				<Transport>
+					<Id>SkipRev</Id>
+					<ButtonType>SKIP_REV</ButtonType>
+					<ReleaseCommand><Name>SKIP_REV</Name><Type>PROTOCOL</Type></ReleaseCommand>
+				</Transport>
+				<Transport>
+					<Id>SkipFwd</Id>
+					<ButtonType>SKIP_FWD</ButtonType>
+					<ReleaseCommand><Name>SKIP_FWD</Name><Type>PROTOCOL</Type></ReleaseCommand>
+				</Transport>
+			</Dashboard>
+		</UI>
+	</capabilities>
+	<proxies>
+		<proxy proxybindingid="5001" primary="True" name="Home Assistant Media Source (openhac4)" image_source="c4z" small_image="icons/device_sm.png" large_image="icons/device_lg.png">media_service</proxy>
+	</proxies>
+	<connections>
+		<connection>
+			<id>5001</id>
+			<type>2</type>
+			<connectionname>MediaService</connectionname>
+			<consumer>False</consumer>
+			<linelevel>False</linelevel>
+			<classes>
+				<class><classname>MediaService</classname></class>
+			</classes>
+			<hidden>False</hidden>
+		</connection>
+		<connection proxybindingid="5001">
+			<id>7001</id>
+			<facing>6</facing>
+			<type>7</type>
+			<connectionname>Audio End-Point</connectionname>
+			<consumer>False</consumer>
+			<linelevel>True</linelevel>
+			<classes>
+				<class><classname>AUDIO_SELECTION</classname><autobind>False</autobind></class>
+			</classes>
+			<hidden>False</hidden>
+		</connection>
+		<connection>
+			<id>1</id>
+			<facing>6</facing>
+			<connectionname>openhac4 Gateway</connectionname>
+			<type>1</type>
+			<consumer>True</consumer>
+			<audiosource>False</audiosource>
+			<videosource>False</videosource>
+			<linelevel>False</linelevel>
+			<classes>
+				<class><classname>OPENHAC4</classname></class>
+			</classes>
+			<hidden>False</hidden>
+		</connection>
+	</connections>
+</devicedata>

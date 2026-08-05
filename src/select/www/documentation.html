@@ -1,0 +1,42 @@
+<h1>Home Assistant Select (openhac4)</h1>
+
+<p>Two-way bridge for a Home Assistant <b>select</b> entity, a named-option
+picker such as thermostat comfort modes, input selects, or vacuum fan modes.
+It has no navigator presence; it exists to drive and read the selection from
+Control4 programming.</p>
+
+<h2>Setup</h2>
+<ol>
+	<li>Add this driver to the project. It finds the openhac4 gateway
+	automatically.</li>
+	<li>Set <b>Entity</b> to the Home Assistant select entity, or type its id
+	into <b>Entity ID</b>. Use <b>Refresh Entity List</b> if it is not listed
+	yet.</li>
+	<li><b>Detected Options</b> shows the entity's options, and a Control4
+	programming event is created for each one.</li>
+</ol>
+
+<h2>Programming</h2>
+<ul>
+	<li>Event: <b>State Unavailable</b>, when the entity goes unavailable in
+	Home Assistant.</li>
+	<li><b>Read:</b> under this driver's events you will see one event per
+	option; program against them, for example "When <i>Cool</i> then...".
+	<b>Current Selection</b> shows the active option.</li>
+	<li><b>Set:</b> the <b>Set Option</b> action/command picks from the entity's
+	live options and applies it in Home Assistant.</li>
+	<li>The driver also creates a read-only <b>HA_&lt;ATTRIBUTE&gt;</b> variable for each attribute the Home Assistant entity reports, named in upper case with non-alphanumeric characters replaced by underscores (an <code>app_name</code> attribute becomes <b>HA_APP_NAME</b>). A small set of metadata and high-churn attributes is skipped (friendly_name, icon, device_class, supported_features, attribution, entity_picture, and media position), and at most 100 are exposed per entity.</li>
+	<li>At most 64 options are exposed as Control4 events for one entity.</li>
+</ul>
+
+<h2>Troubleshooting</h2>
+<ul>
+	<li>No options listed: confirm the entity is a <code>select</code> domain
+	entity, then use <b>Refresh Entity List</b>.</li>
+	<li>Set <b>Debug</b> to On to reveal the logging controls for a trace of
+	selection changes.</li>
+</ul>
+<h2>Changelog</h2>
+<ul>
+	<li>{{SEMVER}} - Initial public release</li>
+</ul>

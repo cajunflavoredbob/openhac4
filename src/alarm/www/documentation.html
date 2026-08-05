@@ -1,0 +1,50 @@
+<h1>Home Assistant Alarm (openhac4)</h1>
+
+<p>Maps a Home Assistant <b>alarm_control_panel</b> entity onto a Control4
+security panel and a single security partition. Arm and disarm from Control4
+call the matching Home Assistant service and pass the entered code straight
+through to Home Assistant; the panel state, including arming and entry/exit
+delays, is reflected back from Home Assistant.</p>
+
+<h2>Setup</h2>
+<ol>
+	<li>Add this driver to the project. It finds the openhac4 gateway
+	automatically.</li>
+	<li>Set <b>Entity</b> to the Home Assistant alarm_control_panel entity, or
+	type its id into <b>Entity ID</b>. Use <b>Refresh Entity List</b> if it is
+	not listed yet.</li>
+	<li>Confirm the driver's <b>Security System</b> connection is bound to the
+	room where the panel should appear. It binds automatically to the room the
+	driver is added to; to surface it in a different room, rebind it under
+	Connections. The <b>Security Panel</b> and <b>Partition</b> connections are
+	internal and need no attention.</li>
+</ol>
+
+<h2>Notes</h2>
+<ul>
+	<li>The PIN is passed through to Home Assistant, which validates it against
+	the real panel. The Control4 keypad prompts for a code when Home Assistant
+	reports one is required to arm.</li>
+	<li>Home Assistant's <i>arming</i> and <i>pending</i> states are shown as
+	exit delay and entry delay.</li>
+	<li>Zones, local PIN validation, and notifications are not included in this
+	version.</li>
+	<li>Canceling an exit delay from Control4 sends a disarm without a code, so
+	it only works on panels that allow disarming without one. On a panel that
+	requires a code, cancel is rejected and the arm proceeds; disarm normally
+	from the keypad instead.</li>
+	<li>Set <b>Debug</b> to On to reveal the logging controls, then choose a
+	<b>Log Mode</b> and raise <b>Log Level</b> to <b>4 - Trace</b> to see command
+	traffic. Debug alone produces no output.</li>
+</ul>
+<h2>Programming</h2>
+<ul>
+	<li>Event: <b>State Unavailable</b>, when the entity goes unavailable in
+	Home Assistant.</li>
+	<li>The driver also creates a read-only <b>HA_&lt;ATTRIBUTE&gt;</b> variable for each attribute the Home Assistant entity reports, named in upper case with non-alphanumeric characters replaced by underscores (an <code>app_name</code> attribute becomes <b>HA_APP_NAME</b>). A small set of metadata and high-churn attributes is skipped (friendly_name, icon, device_class, supported_features, attribution, entity_picture, and media position), and at most 100 are exposed per entity.</li>
+</ul>
+
+<h2>Changelog</h2>
+<ul>
+	<li>{{SEMVER}} - Initial public release</li>
+</ul>

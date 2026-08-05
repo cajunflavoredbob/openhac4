@@ -1,0 +1,215 @@
+<devicedata>
+	<copyright>Copyright 2026 cajunflavoredbob. Licensed under the MIT License.</copyright>
+	<creator>cajunflavoredbob</creator>
+	<manufacturer>openhac4</manufacturer>
+	<name>Home Assistant Switch (openhac4)</name>
+	<model>Home Assistant Switch</model>
+	<created>08/02/2026 09:00 AM</created>
+	<modified>{{MODIFIED}}</modified>
+	<version>{{VERSION_INT}}</version>
+	<semver>{{SEMVER}}</semver>
+	<minimum_os_version>3.4.0</minimum_os_version>
+	<small image_source="c4z">icons/device_sm.png</small>
+	<large image_source="c4z">icons/device_lg.png</large>
+	<control>lua_gen</control>
+	<driver>DriverWorks</driver>
+	<config>
+		<script file="driver.lua" jit="1"/>
+		<documentation file="www/documentation.html"/>
+		<properties>
+			<property>
+				<name>Driver Version</name>
+				<type>STRING</type>
+				<default></default>
+				<readonly>true</readonly>
+			</property>
+			<property>
+				<name>Gateway Status</name>
+				<type>STRING</type>
+				<default>Gateway Not Found</default>
+				<readonly>true</readonly>
+			</property>
+			<property>
+				<name>Entity Status</name>
+				<type>STRING</type>
+				<default>No Entity Selected</default>
+				<readonly>true</readonly>
+			</property>
+			<property>
+				<name>Current State</name>
+				<type>STRING</type>
+				<default></default>
+				<readonly>true</readonly>
+			</property>
+			<property>
+				<name>Entity</name>
+				<type>DYNAMIC_LIST</type>
+				<readonly>false</readonly>
+			</property>
+			<property>
+				<name>Entity ID</name>
+				<type>STRING</type>
+				<default></default>
+				<readonly>false</readonly>
+			</property>
+			<property>
+				<name>Debug</name>
+				<type>LIST</type>
+				<items>
+					<item>Off</item>
+					<item>On</item>
+				</items>
+				<default>Off</default>
+				<readonly>false</readonly>
+			</property>
+			<property>
+				<name>Log Mode</name>
+				<type>LIST</type>
+				<items>
+					<item>Off</item>
+					<item>Print</item>
+					<item>Log</item>
+					<item>Print and Log</item>
+				</items>
+				<default>Off</default>
+				<readonly>false</readonly>
+			</property>
+			<property>
+				<name>Log Level</name>
+				<type>LIST</type>
+				<items>
+					<item>0 - Alert</item>
+					<item>1 - Error</item>
+					<item>2 - Warning</item>
+					<item>3 - Info</item>
+					<item>4 - Trace</item>
+					<item>5 - Debug</item>
+				</items>
+				<default>2 - Warning</default>
+				<readonly>false</readonly>
+			</property>
+			<property>
+				<name>Log Auto Off Minutes</name>
+				<type>RANGED_INTEGER</type>
+				<minimum>1</minimum>
+				<maximum>1440</maximum>
+				<default>30</default>
+				<readonly>false</readonly>
+			</property>
+		</properties>
+		<actions>
+			<action>
+				<name>Refresh Entity List</name>
+				<command>RefreshEntityList</command>
+			</action>
+		</actions>
+		<commands>
+			<command>
+				<name>Turn On</name>
+				<description>Turn on NAME</description>
+			</command>
+			<command>
+				<name>Turn Off</name>
+				<description>Turn off NAME</description>
+			</command>
+			<command>
+				<name>Toggle</name>
+				<description>Toggle NAME</description>
+			</command>
+		</commands>
+	</config>
+	<proxies>
+		<proxy proxybindingid="5001" name="Home Assistant Switch (openhac4)" primary="True" image_source="c4z" large_image="icons/device_lg.png" small_image="icons/device_sm.png">uibutton</proxy>
+	</proxies>
+	<capabilities>
+		<navigator_display_option proxybindingid="5001">
+			<display_icons>
+				<Icon width="70" height="70">controller://driver/openhac4_switch/icons/switch_off_70.png</Icon>
+				<Icon width="90" height="90">controller://driver/openhac4_switch/icons/switch_off_90.png</Icon>
+				<Icon width="300" height="300">controller://driver/openhac4_switch/icons/switch_off_300.png</Icon>
+				<Icon width="512" height="512">controller://driver/openhac4_switch/icons/switch_off_512.png</Icon>
+				<Icon width="1024" height="1024">controller://driver/openhac4_switch/icons/switch_off_1024.png</Icon>
+				<state id="Idle">
+					<Icon width="70" height="70">controller://driver/openhac4_switch/icons/switch_off_70.png</Icon>
+					<Icon width="90" height="90">controller://driver/openhac4_switch/icons/switch_off_90.png</Icon>
+					<Icon width="300" height="300">controller://driver/openhac4_switch/icons/switch_off_300.png</Icon>
+					<Icon width="512" height="512">controller://driver/openhac4_switch/icons/switch_off_512.png</Icon>
+					<Icon width="1024" height="1024">controller://driver/openhac4_switch/icons/switch_off_1024.png</Icon>
+				</state>
+				<state id="Selected">
+					<Icon width="70" height="70">controller://driver/openhac4_switch/icons/switch_on_70.png</Icon>
+					<Icon width="90" height="90">controller://driver/openhac4_switch/icons/switch_on_90.png</Icon>
+					<Icon width="300" height="300">controller://driver/openhac4_switch/icons/switch_on_300.png</Icon>
+					<Icon width="512" height="512">controller://driver/openhac4_switch/icons/switch_on_512.png</Icon>
+					<Icon width="1024" height="1024">controller://driver/openhac4_switch/icons/switch_on_1024.png</Icon>
+				</state>
+			</display_icons>
+		</navigator_display_option>
+	</capabilities>
+	<events>
+		<event>
+			<id>1</id>
+			<name>Turned On</name>
+			<description>NAME turned on</description>
+		</event>
+		<event>
+			<id>2</id>
+			<name>Turned Off</name>
+			<description>NAME turned off</description>
+		</event>
+		<event>
+			<id>3</id>
+			<name>Offline</name>
+			<description>NAME became unavailable</description>
+		</event>
+	</events>
+	<connections>
+		<connection>
+			<id>5001</id>
+			<facing>6</facing>
+			<connectionname>UIBUTTON</connectionname>
+			<type>2</type>
+			<consumer>False</consumer>
+			<audiosource>False</audiosource>
+			<videosource>False</videosource>
+			<linelevel>False</linelevel>
+			<classes>
+				<class>
+					<classname>UIBUTTON</classname>
+				</class>
+			</classes>
+		</connection>
+		<connection>
+			<id>200</id>
+			<facing>6</facing>
+			<connectionname>Relay State</connectionname>
+			<type>1</type>
+			<consumer>False</consumer>
+			<audiosource>False</audiosource>
+			<videosource>False</videosource>
+			<linelevel>False</linelevel>
+			<classes>
+				<class>
+					<classname>RELAY</classname>
+				</class>
+			</classes>
+			<hidden>False</hidden>
+		</connection>
+		<connection>
+			<id>1</id>
+			<facing>6</facing>
+			<connectionname>openhac4 Gateway</connectionname>
+			<type>1</type>
+			<consumer>True</consumer>
+			<audiosource>False</audiosource>
+			<videosource>False</videosource>
+			<linelevel>False</linelevel>
+			<classes>
+				<class>
+					<classname>OPENHAC4</classname>
+				</class>
+			</classes>
+			<hidden>False</hidden>
+		</connection>
+	</connections>
+</devicedata>

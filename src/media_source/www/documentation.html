@@ -1,0 +1,56 @@
+<h1>Home Assistant Media Source (openhac4)</h1>
+
+<p>Presents a Home Assistant media_player entity in Control4 as a room Listen
+source through the media_service proxy. Browse the entity's library from
+Navigator, play items, and see now-playing metadata, progress, transport, and
+shuffle and repeat, with per-room select and volume.</p>
+
+<h2>When to use this driver</h2>
+<p>Audio plays on the Home Assistant device itself, a streaming-service model
+rather than Control4 Digital Audio. Use this driver for media players that are a
+room's own endpoint, such as a Sonos, an AV receiver, or a networked speaker.
+For programming, status, or players fed through a Control4 audio matrix, use the
+separate <b>Home Assistant Media Player (openhac4)</b> driver instead. You can add both
+for the same entity.</p>
+
+<h2>Setup</h2>
+<ol>
+	<li>Add the openhac4 Gateway and connect it to Home Assistant.</li>
+	<li>Add this driver, then pick the media_player entity in the <b>Entity</b>
+	list, or type it into <b>Entity ID</b>.</li>
+	<li>Bind the driver's audio end-point into the rooms where it should appear
+	as a Listen source.</li>
+</ol>
+
+<h2>Features</h2>
+<ul>
+	<li><b>Browse</b> the entity's library through Home Assistant browse_media.
+	Drill into folders and play items.</li>
+	<li><b>Now Playing</b>: title, artist, album, elapsed progress, and transport
+	for play, pause, stop, previous, and next.</li>
+	<li><b>Shuffle and Repeat</b> when the entity supports them.</li>
+	<li><b>Room</b> selection, volume, and mute.</li>
+</ul>
+
+<h2>Known limitations</h2>
+<ul>
+	<li>Album art is forwarded only when Home Assistant reports an absolute http
+	or https URL. Relative art that needs the Home Assistant address and token is
+	skipped. Re-serving art from controller-local storage is a possible future
+	enhancement.</li>
+	<li>The progress bar advances as Home Assistant pushes new state, not smoothly
+	between pushes.</li>
+	<li>The Now Playing queue shows the current track only. Home Assistant does not
+	expose a full queue across integrations.</li>
+</ul>
+
+<h2>Programming</h2>
+<ul>
+	<li>Variables: STATE, MEDIA_TITLE, and VOLUME.</li>
+	<li>The driver also creates a read-only <b>HA_&lt;ATTRIBUTE&gt;</b> variable for each attribute the Home Assistant entity reports, named in upper case with non-alphanumeric characters replaced by underscores (an <code>app_name</code> attribute becomes <b>HA_APP_NAME</b>). A small set of metadata and high-churn attributes is skipped (friendly_name, icon, device_class, supported_features, attribution, entity_picture, and media position), and at most 100 are exposed per entity.</li>
+</ul>
+
+<h2>Changelog</h2>
+<ul>
+	<li>{{SEMVER}} - Initial public release</li>
+</ul>

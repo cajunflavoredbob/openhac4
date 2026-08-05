@@ -1,0 +1,45 @@
+<h1>Home Assistant Sensor (openhac4)</h1>
+
+<p>Exposes a Home Assistant sensor entity such as temperature, humidity, or
+power to Control4 for use in programming. Sensors are informational, so this
+driver has no navigator presence; the value is available as device variables
+and driver properties. Requires the openhac4 Gateway driver, installed and
+connected.</p>
+
+<h2>Setup</h2>
+<ol>
+	<li>Install and connect the Home Assistant Gateway (openhac4) driver
+	first.</li>
+	<li>Add this driver, or let the gateway's Import Devices add it. Import Devices
+	skips sensors that have no unit of measurement, such as diagnostic and text
+	sensors, so add those manually if you need them.</li>
+	<li>Pick the sensor entity in the <b>Entity</b> property. Run <b>Refresh
+	Entity List</b> if it is empty. <b>Entity ID</b> accepts a manually
+	typed entity id.</li>
+</ol>
+
+<h2>Programming</h2>
+<ul>
+	<li>Variables: SENSOR_VALUE, SENSOR_VALUE_NUMBER and UNIT. SENSOR_VALUE is a string. SENSOR_VALUE_NUMBER is numeric when
+	the value parses as a number.</li>
+	<li>The driver also creates a read-only <b>HA_&lt;ATTRIBUTE&gt;</b> variable for each attribute the Home Assistant entity reports, named in upper case with non-alphanumeric characters replaced by underscores (an <code>app_name</code> attribute becomes <b>HA_APP_NAME</b>). A small set of metadata and high-churn attributes is skipped (friendly_name, icon, device_class, supported_features, attribution, entity_picture, and media position), and at most 100 are exposed per entity.</li>
+	<li>Events: Value Changed, Offline.</li>
+	<li>Properties Current Value and Unit mirror the latest reading.</li>
+</ul>
+
+<h2>Troubleshooting</h2>
+<ul>
+	<li><b>Gateway Not Found</b>: add and connect the openhac4 Gateway driver
+	first.</li>
+	<li><b>Entity list empty</b>: the gateway is not connected to Home
+	Assistant yet, or has no entities of this type. Check the gateway's
+	Connection Status, then run <b>Refresh Entity List</b>.</li>
+	<li><b>State stuck on Unavailable</b>: the entity is unavailable in Home
+	Assistant, or the selected entity id does not exist. A typo produces the
+	same result. Confirm the entity id against Home Assistant.</li>
+</ul>
+
+<h2>Changelog</h2>
+<ul>
+	<li>{{SEMVER}} - Initial public release</li>
+</ul>

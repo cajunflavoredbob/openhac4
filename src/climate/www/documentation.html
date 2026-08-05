@@ -1,0 +1,58 @@
+<h1>Home Assistant Climate (openhac4)</h1>
+
+<p>Presents a Home Assistant climate entity in Control4 as a
+native thermostat, with HVAC mode, setpoints, current temperature, and fan
+mode. Requires the openhac4 Gateway driver, installed and connected.</p>
+
+<h2>Setup</h2>
+<ol>
+	<li>Install and connect the Home Assistant Gateway (openhac4) driver
+	first.</li>
+	<li>Add this driver, or let the gateway's Import Devices add it.</li>
+	<li>Pick the climate entity from the <b>Entity</b> dropdown, or type the
+	entity id into <b>Entity ID</b>.</li>
+	<li>Set <b>Temperature Scale</b> to match your Home Assistant unit
+	system, Fahrenheit or Celsius. If it does not match, setpoints will be
+	wrong.</li>
+</ol>
+
+<h2>Programming</h2>
+<ul>
+	<li>Command: Set HVAC Mode, one of Off, Heat, Cool, or Auto.</li>
+	<li>Events: Mode Changed, Offline.</li>
+	<li>Variable: HVAC_MODE.</li>
+	<li>The driver also creates a read-only <b>HA_&lt;ATTRIBUTE&gt;</b> variable for each attribute the Home Assistant entity reports, named in upper case with non-alphanumeric characters replaced by underscores (an <code>app_name</code> attribute becomes <b>HA_APP_NAME</b>). A small set of metadata and high-churn attributes is skipped (friendly_name, icon, device_class, supported_features, attribution, entity_picture, and media position), and at most 100 are exposed per entity.</li>
+	<li>Setpoints and mode are also controllable from the thermostat UI in
+	navigators. In Auto mode the heat and cool setpoints control the low and
+	high target; in Heat or Cool mode a single setpoint is used.</li>
+	<li>Fan mode is set from the thermostat UI in navigators when the Home
+	Assistant entity reports fan modes.</li>
+	<li>Actions: <b>Set Preset Mode</b> and <b>Set Swing Mode</b>, each offering
+	the modes the entity advertises. These are Composer actions rather than
+	programming commands.</li>
+</ul>
+
+<h2>Notes</h2>
+<ul>
+	<li>Current humidity is reported to the thermostat when the entity provides
+	it, and appears in the read-only <b>Current Humidity</b> property.</li>
+	<li>Humidity setpoints and schedules are not exposed. Use a Home Assistant
+	automation, or the gateway's Call Service action, for either.</li>
+</ul>
+
+<h2>Troubleshooting</h2>
+<ul>
+	<li><b>Gateway Not Found</b>: add and connect the openhac4 Gateway driver
+	first.</li>
+	<li><b>Entity list empty</b>: the gateway is not connected to Home
+	Assistant yet, or has no entities of this type. Check the gateway's
+	Connection Status, then run <b>Refresh Entity List</b>.</li>
+	<li><b>State stuck on Unavailable</b>: the entity is unavailable in Home
+	Assistant, or the selected entity id does not exist. A typo produces the
+	same result. Confirm the entity id against Home Assistant.</li>
+</ul>
+
+<h2>Changelog</h2>
+<ul>
+	<li>{{SEMVER}} - Initial public release</li>
+</ul>

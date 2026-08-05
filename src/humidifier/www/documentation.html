@@ -1,0 +1,23 @@
+<h1>Home Assistant Humidifier (openhac4)</h1>
+<p>Controls a Home Assistant <b>humidifier</b> entity from Control4 programming:
+on/off, a target humidity setpoint, and mode selection. It has no navigator tile.
+This is a programming device; drive it from the Actions tab or programming.</p>
+<h2>Setup</h2>
+<ol>
+	<li>Add this driver; it finds the openhac4 gateway automatically.</li>
+	<li>Set <b>Entity</b> to the humidifier entity, or type the id into <b>Entity ID</b>.</li>
+</ol>
+<h2>Actions / programming</h2>
+<ul>
+	<li><b>Turn On</b> / <b>Turn Off</b> / <b>Toggle</b>.</li>
+	<li><b>Set Humidity</b>: target relative humidity from 0 to 100 percent.</li>
+	<li><b>Set Mode</b>: pick from the entity's available modes.</li>
+	<li>Events: Turned On / Off / Offline. Variables: STATE, HUMIDITY, plus the
+	HA_&lt;ATTRIBUTE&gt; variables described below, such as
+	<b>HA_CURRENT_HUMIDITY</b> and <b>HA_MODE</b>.</li>
+	<li>The driver also creates a read-only <b>HA_&lt;ATTRIBUTE&gt;</b> variable for each attribute the Home Assistant entity reports, named in upper case with non-alphanumeric characters replaced by underscores (an <code>app_name</code> attribute becomes <b>HA_APP_NAME</b>). A small set of metadata and high-churn attributes is skipped (friendly_name, icon, device_class, supported_features, attribution, entity_picture, and media position), and at most 100 are exposed per entity.</li>
+</ul>
+<h2>Changelog</h2>
+<ul>
+	<li>{{SEMVER}} - Initial public release</li>
+</ul>

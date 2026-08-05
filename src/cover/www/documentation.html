@@ -1,0 +1,44 @@
+<h1>Home Assistant Cover (openhac4)</h1>
+
+<p>Presents a Home Assistant cover entity such as a blind, shade, or awning in
+Control4 as a blind. Covers whose device class is <b>garage</b> are handled by
+the separate <b>Home Assistant Garage Door (openhac4)</b> driver, and Import Devices
+routes them there automatically. Open/close/stop and position control are available in
+navigators and programming. Requires the openhac4 Gateway driver, installed
+and connected.</p>
+
+<h2>Setup</h2>
+<ol>
+	<li>Install and connect the Home Assistant Gateway (openhac4) driver
+	first.</li>
+	<li>Add this driver, or let the gateway's Import Devices add it.</li>
+	<li>Pick the cover entity from the <b>Entity</b> dropdown, or type the
+	entity id into <b>Entity ID</b>.</li>
+</ol>
+
+<h2>Programming</h2>
+<ul>
+	<li>Commands: Open, Close, Stop, Set Position.</li>
+	<li>Events: Opened, Closed, Stopped, Offline.</li>
+	<li>Variable: LEVEL, where 0 is closed and 100 is open.</li>
+	<li>The driver also creates a read-only <b>HA_&lt;ATTRIBUTE&gt;</b> variable for each attribute the Home Assistant entity reports, named in upper case with non-alphanumeric characters replaced by underscores (an <code>app_name</code> attribute becomes <b>HA_APP_NAME</b>). A small set of metadata and high-churn attributes is skipped (friendly_name, icon, device_class, supported_features, attribution, entity_picture, and media position), and at most 100 are exposed per entity.</li>
+	<li>Position control is available when the Home Assistant cover reports
+	position support; otherwise only open/close/stop are used.</li>
+</ul>
+
+<h2>Troubleshooting</h2>
+<ul>
+	<li><b>Gateway Not Found</b>: add and connect the openhac4 Gateway driver
+	first.</li>
+	<li><b>Entity list empty</b>: the gateway is not connected to Home
+	Assistant yet, or has no entities of this type. Check the gateway's
+	Connection Status, then run <b>Refresh Entity List</b>.</li>
+	<li><b>State stuck on Unavailable</b>: the entity is unavailable in Home
+	Assistant, or the selected entity id does not exist. A typo produces the
+	same result. Confirm the entity id against Home Assistant.</li>
+</ul>
+
+<h2>Changelog</h2>
+<ul>
+	<li>{{SEMVER}} - Initial public release</li>
+</ul>

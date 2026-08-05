@@ -1,0 +1,194 @@
+<devicedata>
+	<copyright>Copyright 2026 cajunflavoredbob. Licensed under the MIT License.</copyright>
+	<creator>cajunflavoredbob</creator>
+	<manufacturer>openhac4</manufacturer>
+	<name>Home Assistant Light (openhac4)</name>
+	<model>Home Assistant Light</model>
+	<created>08/02/2026 09:00 AM</created>
+	<modified>{{MODIFIED}}</modified>
+	<version>{{VERSION_INT}}</version>
+	<semver>{{SEMVER}}</semver>
+	<minimum_os_version>3.4.0</minimum_os_version>
+	<small image_source="c4z">icons/device_sm.png</small>
+	<large image_source="c4z">icons/device_lg.png</large>
+	<control>lua_gen</control>
+	<driver>DriverWorks</driver>
+	<config>
+		<script file="driver.lua" jit="1"/>
+		<documentation file="www/documentation.html"/>
+		<properties>
+			<property>
+				<name>Driver Version</name>
+				<type>STRING</type>
+				<default></default>
+				<readonly>true</readonly>
+			</property>
+			<property>
+				<name>Gateway Status</name>
+				<type>STRING</type>
+				<default>Gateway Not Found</default>
+				<readonly>true</readonly>
+			</property>
+			<property>
+				<name>Entity Status</name>
+				<type>STRING</type>
+				<default>No Entity Selected</default>
+				<readonly>true</readonly>
+			</property>
+			<property>
+				<name>Current Level</name>
+				<type>STRING</type>
+				<default></default>
+				<readonly>true</readonly>
+			</property>
+			<property>
+				<name>Detected Capabilities</name>
+				<type>STRING</type>
+				<default></default>
+				<readonly>true</readonly>
+			</property>
+			<property>
+				<name>Entity</name>
+				<type>DYNAMIC_LIST</type>
+				<readonly>false</readonly>
+			</property>
+			<property>
+				<name>Entity ID</name>
+				<type>STRING</type>
+				<default></default>
+				<readonly>false</readonly>
+			</property>
+			<property>
+				<name>Color Mode</name>
+				<type>LIST</type>
+				<items>
+					<item>Auto</item>
+					<item>XY</item>
+					<item>RGB</item>
+					<item>HS</item>
+				</items>
+				<default>Auto</default>
+				<readonly>false</readonly>
+			</property>
+			<property>
+				<name>Debug</name>
+				<type>LIST</type>
+				<items>
+					<item>Off</item>
+					<item>On</item>
+				</items>
+				<default>Off</default>
+				<readonly>false</readonly>
+			</property>
+			<property>
+				<name>Log Mode</name>
+				<type>LIST</type>
+				<items>
+					<item>Off</item>
+					<item>Print</item>
+					<item>Log</item>
+					<item>Print and Log</item>
+				</items>
+				<default>Off</default>
+				<readonly>false</readonly>
+			</property>
+			<property>
+				<name>Log Level</name>
+				<type>LIST</type>
+				<items>
+					<item>0 - Alert</item>
+					<item>1 - Error</item>
+					<item>2 - Warning</item>
+					<item>3 - Info</item>
+					<item>4 - Trace</item>
+					<item>5 - Debug</item>
+				</items>
+				<default>2 - Warning</default>
+				<readonly>false</readonly>
+			</property>
+			<property>
+				<name>Log Auto Off Minutes</name>
+				<type>RANGED_INTEGER</type>
+				<minimum>1</minimum>
+				<maximum>1440</maximum>
+				<default>30</default>
+				<readonly>false</readonly>
+			</property>
+		</properties>
+		<actions>
+			<action>
+				<name>Refresh Entity List</name>
+				<command>RefreshEntityList</command>
+			</action>
+		</actions>
+		<commands/>
+	</config>
+	<proxies>
+		<proxy proxybindingid="5001" primary="True" name="Home Assistant Light (openhac4)">light_v2</proxy>
+	</proxies>
+	<capabilities>
+		<level_target>True</level_target>
+		<dimmer>True</dimmer>
+		<set_level>True</set_level>
+		<ramp_level>True</ramp_level>
+		<on_off>True</on_off>
+		<min_max>False</min_max>
+		<supports_target>True</supports_target>
+		<supports_color>True</supports_color>
+		<supports_color_correlated_temperature>True</supports_color_correlated_temperature>
+		<brightness_rate_min>0</brightness_rate_min>
+		<brightness_rate_max>1800000</brightness_rate_max>
+		<light_brightness_rate_default>500</light_brightness_rate_default>
+		<color_rate_min>0</color_rate_min>
+		<color_rate_max>1800000</color_rate_max>
+		<cold_start>False</cold_start>
+		<has_leds>False</has_leds>
+		<click_rates>False</click_rates>
+		<hold_rates>False</hold_rates>
+		<load_group_support>False</load_group_support>
+		<advanced_scene_support>False</advanced_scene_support>
+		<buttons_are_virtual>True</buttons_are_virtual>
+		<hide_proxy_properties>True</hide_proxy_properties>
+		<hide_proxy_events>False</hide_proxy_events>
+	</capabilities>
+	<events>
+		<event>
+			<id>1</id>
+			<name>Offline</name>
+			<description>NAME became unavailable</description>
+		</event>
+	</events>
+	<connections>
+		<connection>
+			<id>5001</id>
+			<facing>6</facing>
+			<connectionname>LIGHT</connectionname>
+			<type>2</type>
+			<consumer>False</consumer>
+			<audiosource>False</audiosource>
+			<videosource>False</videosource>
+			<linelevel>False</linelevel>
+			<classes>
+				<class>
+					<classname>LIGHT_V2</classname>
+				</class>
+			</classes>
+		</connection>
+		<connection>
+			<id>1</id>
+			<facing>6</facing>
+			<connectionname>openhac4 Gateway</connectionname>
+			<type>1</type>
+			<consumer>True</consumer>
+			<audiosource>False</audiosource>
+			<videosource>False</videosource>
+			<linelevel>False</linelevel>
+			<classes>
+				<class>
+					<classname>OPENHAC4</classname>
+				</class>
+			</classes>
+			<hidden>False</hidden>
+		</connection>
+	</connections>
+</devicedata>

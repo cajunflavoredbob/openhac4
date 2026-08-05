@@ -1,0 +1,281 @@
+<devicedata>
+	<copyright>Copyright 2026 cajunflavoredbob. Licensed under the MIT License.</copyright>
+	<creator>cajunflavoredbob</creator>
+	<manufacturer>openhac4</manufacturer>
+	<name>Home Assistant Vacuum (openhac4)</name>
+	<model>Home Assistant Vacuum</model>
+	<created>08/02/2026 09:00 AM</created>
+	<modified>{{MODIFIED}}</modified>
+	<version>{{VERSION_INT}}</version>
+	<semver>{{SEMVER}}</semver>
+	<minimum_os_version>3.4.0</minimum_os_version>
+	<small image_source="c4z">icons/device_sm.png</small>
+	<large image_source="c4z">icons/device_lg.png</large>
+	<control>lua_gen</control>
+	<driver>DriverWorks</driver>
+	<config>
+		<script file="driver.lua" jit="1"/>
+		<documentation file="www/documentation.html"/>
+		<properties>
+			<property>
+				<name>Driver Version</name>
+				<type>STRING</type>
+				<default></default>
+				<readonly>true</readonly>
+			</property>
+			<property>
+				<name>Gateway Status</name>
+				<type>STRING</type>
+				<default>Gateway Not Found</default>
+				<readonly>true</readonly>
+			</property>
+			<property>
+				<name>Entity Status</name>
+				<type>STRING</type>
+				<default>No Entity Selected</default>
+				<readonly>true</readonly>
+			</property>
+			<property>
+				<name>Current State</name>
+				<type>STRING</type>
+				<default></default>
+				<readonly>true</readonly>
+			</property>
+			<property>
+				<name>Battery</name>
+				<type>STRING</type>
+				<default></default>
+				<readonly>true</readonly>
+			</property>
+			<property>
+				<name>Entity</name>
+				<type>DYNAMIC_LIST</type>
+				<readonly>false</readonly>
+			</property>
+			<property>
+				<name>Entity ID</name>
+				<type>STRING</type>
+				<default></default>
+				<readonly>false</readonly>
+			</property>
+			<property>
+				<name>Debug</name>
+				<type>LIST</type>
+				<items>
+					<item>Off</item>
+					<item>On</item>
+				</items>
+				<default>Off</default>
+				<readonly>false</readonly>
+			</property>
+			<property>
+				<name>Log Mode</name>
+				<type>LIST</type>
+				<items>
+					<item>Off</item>
+					<item>Print</item>
+					<item>Log</item>
+					<item>Print and Log</item>
+				</items>
+				<default>Off</default>
+				<readonly>false</readonly>
+			</property>
+			<property>
+				<name>Log Level</name>
+				<type>LIST</type>
+				<items>
+					<item>0 - Alert</item>
+					<item>1 - Error</item>
+					<item>2 - Warning</item>
+					<item>3 - Info</item>
+					<item>4 - Trace</item>
+					<item>5 - Debug</item>
+				</items>
+				<default>2 - Warning</default>
+				<readonly>false</readonly>
+			</property>
+			<property>
+				<name>Log Auto Off Minutes</name>
+				<type>RANGED_INTEGER</type>
+				<minimum>1</minimum>
+				<maximum>1440</maximum>
+				<default>30</default>
+				<readonly>false</readonly>
+			</property>
+		</properties>
+		<actions>
+			<action>
+				<name>Refresh Entity List</name>
+				<command>RefreshEntityList</command>
+			</action>
+			<action><name>Start</name><command>Start</command></action>
+			<action><name>Pause</name><command>Pause</command></action>
+			<action><name>Stop</name><command>Stop</command></action>
+			<action><name>Return to Dock</name><command>Return_to_Dock</command></action>
+			<action><name>Locate</name><command>Locate</command></action>
+			<action>
+				<name>Set Fan Speed</name>
+				<command>Set_Fan_Speed</command>
+				<params>
+					<param>
+						<name>Speed</name>
+						<type>CUSTOM_SELECT:GetVacuumFanSpeeds</type>
+					</param>
+				</params>
+			</action>
+			<action>
+				<name>Send Command</name>
+				<command>SendCommand</command>
+				<params>
+					<param>
+						<name>Command</name>
+						<type>STRING</type>
+					</param>
+					<param>
+						<name>Params</name>
+						<type>STRING</type>
+					</param>
+				</params>
+			</action>
+		</actions>
+		<commands>
+			<command>
+				<name>Start</name>
+				<description>Start NAME cleaning</description>
+			</command>
+			<command>
+				<name>Pause</name>
+				<description>Pause NAME</description>
+			</command>
+			<command>
+				<name>Stop</name>
+				<description>Stop NAME</description>
+			</command>
+			<command>
+				<name>Return to Dock</name>
+				<description>Send NAME back to the dock</description>
+			</command>
+			<command>
+				<name>Locate</name>
+				<description>Locate NAME</description>
+			</command>
+			<command>
+				<name>Set Fan Speed</name>
+				<description>Set NAME fan speed to PARAM1</description>
+				<params>
+					<param>
+						<name>Speed</name>
+						<type>CUSTOM_SELECT:GetVacuumFanSpeeds</type>
+					</param>
+				</params>
+			</command>
+			<command>
+				<name>Send Command</name>
+				<description>Send NAME the PARAM1 command</description>
+				<params>
+					<param>
+						<name>Command</name>
+						<type>STRING</type>
+					</param>
+					<param>
+						<name>Params</name>
+						<type>STRING</type>
+					</param>
+				</params>
+			</command>
+		</commands>
+	</config>
+	<proxies>
+		<proxy proxybindingid="5001" name="Home Assistant Vacuum (openhac4)" primary="True" image_source="c4z" large_image="icons/device_lg.png" small_image="icons/device_sm.png">uibutton</proxy>
+	</proxies>
+	<capabilities>
+		<navigator_display_option proxybindingid="5001">
+			<display_icons>
+				<Icon width="70" height="70">controller://driver/openhac4_vacuum/icons/vac_idle_70.png</Icon>
+				<Icon width="90" height="90">controller://driver/openhac4_vacuum/icons/vac_idle_90.png</Icon>
+				<Icon width="300" height="300">controller://driver/openhac4_vacuum/icons/vac_idle_300.png</Icon>
+				<Icon width="512" height="512">controller://driver/openhac4_vacuum/icons/vac_idle_512.png</Icon>
+				<Icon width="1024" height="1024">controller://driver/openhac4_vacuum/icons/vac_idle_1024.png</Icon>
+				<state id="Idle">
+					<Icon width="70" height="70">controller://driver/openhac4_vacuum/icons/vac_idle_70.png</Icon>
+					<Icon width="90" height="90">controller://driver/openhac4_vacuum/icons/vac_idle_90.png</Icon>
+					<Icon width="300" height="300">controller://driver/openhac4_vacuum/icons/vac_idle_300.png</Icon>
+					<Icon width="512" height="512">controller://driver/openhac4_vacuum/icons/vac_idle_512.png</Icon>
+					<Icon width="1024" height="1024">controller://driver/openhac4_vacuum/icons/vac_idle_1024.png</Icon>
+				</state>
+				<state id="Selected">
+					<Icon width="70" height="70">controller://driver/openhac4_vacuum/icons/vac_active_70.png</Icon>
+					<Icon width="90" height="90">controller://driver/openhac4_vacuum/icons/vac_active_90.png</Icon>
+					<Icon width="300" height="300">controller://driver/openhac4_vacuum/icons/vac_active_300.png</Icon>
+					<Icon width="512" height="512">controller://driver/openhac4_vacuum/icons/vac_active_512.png</Icon>
+					<Icon width="1024" height="1024">controller://driver/openhac4_vacuum/icons/vac_active_1024.png</Icon>
+				</state>
+			</display_icons>
+		</navigator_display_option>
+	</capabilities>
+	<events>
+		<event>
+			<id>1</id>
+			<name>Started Cleaning</name>
+			<description>NAME started cleaning</description>
+		</event>
+		<event>
+			<id>2</id>
+			<name>Docked</name>
+			<description>NAME returned to the dock</description>
+		</event>
+		<event>
+			<id>3</id>
+			<name>Returning</name>
+			<description>NAME is returning to the dock</description>
+		</event>
+		<event>
+			<id>4</id>
+			<name>Paused</name>
+			<description>NAME paused</description>
+		</event>
+		<event>
+			<id>5</id>
+			<name>Error</name>
+			<description>NAME reported an error</description>
+		</event>
+		<event>
+			<id>6</id>
+			<name>Offline</name>
+			<description>NAME became unavailable</description>
+		</event>
+	</events>
+	<connections>
+		<connection>
+			<id>5001</id>
+			<facing>6</facing>
+			<connectionname>UIBUTTON</connectionname>
+			<type>2</type>
+			<consumer>False</consumer>
+			<audiosource>False</audiosource>
+			<videosource>False</videosource>
+			<linelevel>False</linelevel>
+			<classes>
+				<class>
+					<classname>UIBUTTON</classname>
+				</class>
+			</classes>
+		</connection>
+		<connection>
+			<id>1</id>
+			<facing>6</facing>
+			<connectionname>openhac4 Gateway</connectionname>
+			<type>1</type>
+			<consumer>True</consumer>
+			<audiosource>False</audiosource>
+			<videosource>False</videosource>
+			<linelevel>False</linelevel>
+			<classes>
+				<class>
+					<classname>OPENHAC4</classname>
+				</class>
+			</classes>
+			<hidden>False</hidden>
+		</connection>
+	</connections>
+</devicedata>

@@ -1,0 +1,53 @@
+<h1>Home Assistant Fan (openhac4)</h1>
+
+<p>Presents a Home Assistant fan entity in Control4 as a 4-speed fan. Control4
+uses discrete speeds; this driver maps speeds 1-4 to 25/50/75/100 percent in
+Home Assistant, and speed 0 is off. Requires the openhac4 Gateway driver,
+installed and connected.</p>
+
+<h2>Setup</h2>
+<ol>
+	<li>Install and connect the Home Assistant Gateway (openhac4) driver
+	first.</li>
+	<li>Add this driver, or let the gateway's Import Devices add it.</li>
+	<li>Pick the fan entity from the <b>Entity</b> dropdown, or type the entity
+	id into <b>Entity ID</b>.</li>
+</ol>
+
+<h2>Programming</h2>
+<ul>
+	<li>Commands: Turn On, Turn Off, Toggle, Set Speed from 0 to 4.</li>
+	<li>Events: Turned On, Turned Off, Offline.</li>
+	<li>Variable: SPEED, 0 to 4.</li>
+	<li>The driver also creates a read-only <b>HA_&lt;ATTRIBUTE&gt;</b> variable for each attribute the Home Assistant entity reports, named in upper case with non-alphanumeric characters replaced by underscores (an <code>app_name</code> attribute becomes <b>HA_APP_NAME</b>). A small set of metadata and high-churn attributes is skipped (friendly_name, icon, device_class, supported_features, attribution, entity_picture, and media position), and at most 100 are exposed per entity.</li>
+	<li>Actions: <b>Set Oscillation</b>, and <b>Set Preset Mode</b> offering the
+	presets the entity advertises. These are Composer actions rather than
+	programming commands.</li>
+</ul>
+
+<h2>Notes</h2>
+<ul>
+	<li>The driver presents 4 speeds. Fans with a different number of native
+	speeds are still controllable by percentage; the nearest speed is used.</li>
+	<li>Preset modes are reached through the Set Preset Mode action only. The
+	driver does not advertise preset support to the fan proxy, so presets do not
+	appear in the navigator fan UI.</li>
+	<li>Direction (forward and reverse) is not exposed.</li>
+</ul>
+
+<h2>Troubleshooting</h2>
+<ul>
+	<li><b>Gateway Not Found</b>: add and connect the openhac4 Gateway driver
+	first.</li>
+	<li><b>Entity list empty</b>: the gateway is not connected to Home
+	Assistant yet, or has no entities of this type. Check the gateway's
+	Connection Status, then run <b>Refresh Entity List</b>.</li>
+	<li><b>State stuck on Unavailable</b>: the entity is unavailable in Home
+	Assistant, or the selected entity id does not exist. A typo produces the
+	same result. Confirm the entity id against Home Assistant.</li>
+</ul>
+
+<h2>Changelog</h2>
+<ul>
+	<li>{{SEMVER}} - Initial public release</li>
+</ul>

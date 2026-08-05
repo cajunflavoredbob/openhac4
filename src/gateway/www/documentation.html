@@ -1,0 +1,115 @@
+<h1>Home Assistant Gateway (openhac4)</h1>
+
+<p>Connects Control4 to a Home Assistant instance over its websocket API. This
+gateway manages the connection and device discovery. Individual Home Assistant
+entities are handled by the openhac4 child drivers, which all require this
+gateway to be installed and connected first.</p>
+
+<h2>Setup</h2>
+<ol>
+	<li>In Home Assistant, open your user profile, then the Security tab, and
+	create a Long-Lived Access Token. Copy it somewhere safe. Home Assistant
+	shows it only once.</li>
+	<li>In Composer Pro, use Driver &gt; Add or Update Driver or Agent to load
+	<b>every</b> openhac4 <code>.c4z</code> file, not just this gateway. That only
+	loads them into Composer's driver database; you do not place them in the
+	project by hand. <b>Import Devices</b> can only create a child driver that is
+	already in the database, so a database holding only the gateway imports
+	nothing.</li>
+	<li>Add this driver to the project in Composer Pro.</li>
+	<li>Set <b>Home Assistant Address</b> to the IP or hostname of your Home
+	Assistant instance. A static IP or DHCP reservation is strongly
+	recommended.</li>
+	<li>Confirm <b>Port</b>. The Home Assistant default is 8123.</li>
+	<li>Paste the token into <b>Access Token</b>.</li>
+	<li><b>Connection Status</b> should read "Connected - Authenticated" and
+	<b>Entity Count</b> should populate within a few seconds.</li>
+</ol>
+
+<h2>Actions</h2>
+<ul>
+	<li><b>Import Rooms</b>: creates a Control4 room for each Home Assistant area
+	on the project's floor. The driver remembers the rooms it created, so
+	re-running does not duplicate them. It does not match or reuse rooms you
+	created by hand. If a Home Assistant area name matches an existing room, a
+	second room is created and you reconcile it manually.</li>
+	<li><b>Import Devices</b>: opens a dialog to choose a <b>Mode</b> and filters.
+	Preview logs the plan only and Import performs it. Filter by <b>Domain</b>,
+	<b>Area</b>, <b>Label</b>, and <b>Max</b>. Label imports only entities
+	carrying that Home Assistant label. Max caps a single run and the import is
+	refused if the selection exceeds it. Each matching entity is added as a child
+	driver, placed into the Control4 room for its Home Assistant area, so run
+	Import Rooms first. Entities whose area has no room, or that have no area, are
+	added to this gateway's room. Entities that already have a driver are skipped, as are
+	<code>sensor</code> entities with no unit of measurement (these are usually
+	diagnostic or text sensors).
+	Devices are added one at a time and a large import can take a while, so it is
+	safe to start it and leave it running.</li>
+	<li><b>Call Service</b>: call any Home Assistant service. Available both here
+	as an action and as a device-specific command in Programming. Set
+	a <b>Domain</b> such as <code>scene</code> and a <b>Service</b> such as
+	<code>turn_on</code>. Optionally set a target <b>Entity</b> and a <b>Data</b>
+	JSON object of service data such as <code>{"brightness":128}</code>. Use it
+	for scenes, scripts, automations, or any entity without its own driver.</li>
+	<li><b>Connect</b>: force a reconnect now.</li>
+	<li><b>Discover Devices</b>: refresh the entity list, areas, and labels from
+	Home Assistant. Run it after adding an area or label in Home Assistant, or the
+	Area and Label filters will still show what existed when the gateway
+	connected.</li>
+	<li><b>Display Devices</b>: print all known entities and their current states
+	to the Lua output window.</li>
+	<li><b>Display Diagnostics</b>: print connection details to the Lua output
+	window.</li>
+</ul>
+
+<h2>Troubleshooting</h2>
+<ul>
+	<li><b>Status mentions "authentication failed"</b>: the token is wrong, expired, or was
+	revoked. Create a new token and paste it again. The driver reconnects
+	automatically when the property changes.</li>
+	<li><b>Stuck on "Connecting" or reconnect loop</b>: verify the address and
+	port are reachable from the controller itself, not just from your PC, and
+	that nothing on the network blocks the controller's VLAN from reaching Home
+	Assistant.</li>
+	<li><b>Import Devices creates nothing</b>: the child driver <code>.c4z</code>
+	files are missing from Composer's driver database. Load all of them with
+	Driver &gt; Add or Update Driver or Agent and run the import again. Preview
+	mode is inspection only and never adds a driver, so a Preview that lists
+	entities correctly while Import produces no devices points at this.</li>
+	<li><b>Use SSL</b>: enable only if Home Assistant is served over HTTPS. With
+	SSL Off the access token crosses the LAN in cleartext on every reconnect, so
+	keep the gateway and Home Assistant on a trusted network segment.</li>
+	<li><b>Verify Certificate</b>: with SSL on, set this On to verify the Home
+	Assistant server certificate. It protects against an active
+	man-in-the-middle but requires Home Assistant to present a certificate valid
+	against a system CA. Leave it Off for a self-signed certificate, which
+	encrypts the traffic but does not authenticate the server.</li>
+	<li><b>Access and trust</b>: the access token is a Home Assistant credential
+	with whatever rights the user who created it has, so prefer a token minted
+	from a dedicated Home Assistant user rather than an administrator account.
+	Note also that Control4 treats every driver in a project as trusted: any
+	driver installed alongside this one can ask the gateway to call a Home
+	Assistant service, so the gateway's authority is effectively shared with the
+	whole project.</li>
+	<li><b>Debug</b>: set to On to reveal the logging controls.
+		<ul>
+			<li><b>Log Mode</b> picks live sinks. Print writes to the Lua output
+			window, Log writes to the director log stream, or choose both.</li>
+			<li><b>Log Level</b> sets the severity threshold. 3 - Info shows entity
+			state changes, 4 - Trace adds connection detail (per-command dumps come from the child
+			drivers, each with its own Debug property), and 5 - Debug
+			adds raw websocket frames in both directions. Frames carrying a
+			credential (the access token, or a service call with an alarm or lock
+			code) are withheld from the log entirely, and long payloads are
+			truncated.</li>
+			<li><b>Log Auto Off Minutes</b> reverts Debug to Off after the
+			configured number of minutes, 30 by default. Turning Debug Off also
+			stops all logging.</li>
+		</ul>
+	</li>
+</ul>
+
+<h2>Changelog</h2>
+<ul>
+	<li>{{SEMVER}} - Initial public release</li>
+</ul>
