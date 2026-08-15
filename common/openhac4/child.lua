@@ -327,9 +327,23 @@ function Child.Register ()
 	if (Properties ['Entity Status'] == 'No Entity Selected') then
 		UpdateProperty ('Entity Status', 'Waiting for Home Assistant')
 	end
-	if (Child.SendToGateway ('OPENHAC4_REGISTER', {entity_id = entity, domain = gDomain})) then
+	-- version rides every registration: the gateway enforces a strict x.y.z
+	-- match and refuses mismatched drivers (mixed versions have mismatched
+	-- cross-driver protocol expectations)
+	if (Child.SendToGateway ('OPENHAC4_REGISTER',
+			{entity_id = entity, domain = gDomain, version = Child.Semver ()})) then
 		gLastRegisteredEntity = entity
 	end
+end
+
+-- this driver's own semver, cached after the first successful read
+local gSemver = nil
+function Child.Semver ()
+	if (gSemver == nil) then
+		pcall (function () gSemver = tostring (C4:GetDriverConfigInfo ('semver') or '') end)
+		gSemver = gSemver or ''
+	end
+	return gSemver
 end
 
 function Child.RequestEntityList ()
@@ -463,6 +477,15 @@ function Child.Setup (opts)
 		if (not fromGateway (tParams)) then return end
 		gLastRegisteredEntity = nil
 		Child.Register ()
+	end
+
+	-- the gateway refused this driver's registration over a version mismatch:
+	-- say so plainly instead of sitting at "Waiting for Home Assistant"
+	EC.OPENHAC4_VERSION_MISMATCH = function (tParams)
+		if (not fromGateway (tParams)) then return end
+		local gv = tostring (tParams.gateway_version or 'unknown')
+		UpdateProperty ('Gateway Status', 'VERSION MISMATCH - gateway is ' .. gv ..
+			', this driver is ' .. Child.Semver () .. '; update all openhac4 drivers together')
 	end
 
 	EC.OPENHAC4_ENTITIES = function (tParams)

@@ -798,10 +798,62 @@ do -- messages from child drivers
 		end
 	end
 
+	-- Version enforcement: every child must run the gateway's exact x.y.z.
+	-- Mixed versions mean mismatched cross-driver protocol expectations, so a
+	-- mismatched child is refused outright, named in the Version Mismatch
+	-- property, and told why (its Gateway Status shows the mismatch too).
+	gVersionMismatch = gVersionMismatch or {} -- deviceId -> {v, entity}
+
+	local function updateMismatchProperty ()
+		local ids = {}
+		for id in pairs (gVersionMismatch) do ids [#ids + 1] = id end
+		if (#ids == 0) then
+			UpdateProperty ('Version Mismatch', 'None')
+			return
+		end
+		table.sort (ids)
+		local parts = {}
+		for i = 1, math.min (#ids, 5) do
+			local m = gVersionMismatch [ids [i]]
+			parts [#parts + 1] = 'device ' .. ids [i] .. ' (' .. m.entity .. ') at ' .. m.v
+		end
+		local more = (#ids > 5) and (' and ' .. (#ids - 5) .. ' more') or ''
+		UpdateProperty ('Version Mismatch', 'BLOCKED - not at ' .. DriverSemver () ..
+			': ' .. table.concat (parts, '; ') .. more)
+	end
+
+	local function versionAccepted (deviceId, entityId, tParams)
+		local childVer = tostring (tParams.version or 'unknown')
+		local gv = DriverSemver ()
+		if (childVer == gv) then
+			if (gVersionMismatch [deviceId]) then
+				gVersionMismatch [deviceId] = nil
+				updateMismatchProperty ()
+			end
+			return true
+		end
+		-- log once per device+version, not on every 2-minute re-register
+		local prior = gVersionMismatch [deviceId]
+		if (not (prior and prior.v == childVer)) then
+			print ('openhac4: REFUSED registration from device ' .. deviceId ..
+				' (' .. tostring (entityId) .. '): driver version ' .. childVer ..
+				' does not match gateway ' .. gv ..
+				'. All openhac4 drivers must run the same version; update them together.')
+		end
+		gVersionMismatch [deviceId] = {v = childVer, entity = tostring (entityId)}
+		updateMismatchProperty ()
+		C4:SendToDevice (deviceId, 'OPENHAC4_VERSION_MISMATCH',
+			{gateway_version = gv, gateway_id = gatewayId ()})
+		return false
+	end
+
 	EC.OPENHAC4_REGISTER = function (tParams)
 		local deviceId = tonumber (tParams.device_id)
 		local entityId = tParams.entity_id
 		if (not (deviceId and entityId)) then
+			return
+		end
+		if (not versionAccepted (deviceId, entityId, tParams)) then
 			return
 		end
 
@@ -858,6 +910,11 @@ do -- messages from child drivers
 		local deviceId = tonumber (tParams.device_id)
 		if (not deviceId) then
 			return
+		end
+		-- a removed/released driver is no longer a mismatch worth reporting
+		if (gVersionMismatch [deviceId]) then
+			gVersionMismatch [deviceId] = nil
+			updateMismatchProperty ()
 		end
 		local entityId = gChildEntities [deviceId]
 		gChildEntities [deviceId] = nil
@@ -1455,14 +1512,15 @@ do -- update check (opt-in, default Off; one HTTPS GET to api.github.com)
 
 	gUpdateStatus = nil -- suffix shown after the version in Driver Version
 
-	local function driverSemver ()
+	-- shared: the update check and the child version enforcement both key on it
+	function DriverSemver ()
 		local semver
 		pcall (function () semver = C4:GetDriverConfigInfo ('semver') end)
 		return tostring (semver or '')
 	end
 
 	function ShowDriverVersion ()
-		local v = driverSemver ()
+		local v = DriverSemver ()
 		UpdateProperty ('Driver Version', v .. (gUpdateStatus or ''))
 	end
 
@@ -1498,7 +1556,7 @@ do -- update check (opt-in, default Off; one HTTPS GET to api.github.com)
 				if (not tag) then
 					gUpdateStatus = ' (Update check failed)'
 					Debug.Warn ('update check failed: HTTP', tostring (responseCode))
-				elseif (isNewer (tag, driverSemver ())) then
+				elseif (isNewer (tag, DriverSemver ())) then
 					gUpdateStatus = ' (Update available: ' .. tag .. ')'
 					print ('openhac4: update available: ' .. tag ..
 						' - download the new .c4z files from' ..

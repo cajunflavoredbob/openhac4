@@ -36,6 +36,12 @@
 				<tooltip>When On, checks the openhac4 GitHub releases once a day and shows the result in Driver Version. One HTTPS request to api.github.com; nothing else is sent.</tooltip>
 			</property>
 			<property>
+				<name>Version Mismatch</name>
+				<type>STRING</type>
+				<default>None</default>
+				<readonly>true</readonly>
+			</property>
+			<property>
 				<name>Connection Status</name>
 				<type>STRING</type>
 				<default>Not Configured</default>

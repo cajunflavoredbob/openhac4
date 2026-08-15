@@ -76,6 +76,11 @@ gateway to be installed and connected first.</p>
 
 <h2>Troubleshooting</h2>
 <ul>
+	<li><b>Version Mismatch property is not "None"</b>: every openhac4 driver
+	must run the exact same version as the gateway. The property names the
+	device ids and versions being refused; their own Gateway Status says the
+	same. Update every openhac4 <code>.c4z</code> together and the entries
+	clear as each driver re-registers.</li>
 	<li><b>Status mentions "authentication failed"</b>: the token is wrong, expired, or was
 	revoked. Create a new token and paste it again. The driver reconnects
 	automatically when the property changes.</li>

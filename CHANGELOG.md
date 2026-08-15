@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.2.0
+- Strict version enforcement: the gateway refuses child drivers whose version
+  does not exactly match its own. Refused drivers are named in the gateway's
+  new Version Mismatch property and their Gateway Status explains the
+  mismatch. Update all openhac4 drivers together.
+
 ## 1.1.1
 - Gateway: the update-available message and the documentation now point at the
   GitHub releases page and the Composer update steps.
