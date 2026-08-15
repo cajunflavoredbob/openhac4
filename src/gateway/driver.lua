@@ -1500,7 +1500,10 @@ do -- update check (opt-in, default Off; one HTTPS GET to api.github.com)
 					Debug.Warn ('update check failed: HTTP', tostring (responseCode))
 				elseif (isNewer (tag, driverSemver ())) then
 					gUpdateStatus = ' (Update available: ' .. tag .. ')'
-					print ('openhac4: update available: ' .. tag)
+					print ('openhac4: update available: ' .. tag ..
+						' - download the new .c4z files from' ..
+						' https://github.com/cajunflavoredbob/openhac4/releases' ..
+						' and apply them with Driver > Add or Update Driver or Agent')
 				else
 					gUpdateStatus = ' (Up to Date)'
 				end
