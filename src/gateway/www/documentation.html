@@ -62,6 +62,16 @@ gateway to be installed and connected first.</p>
 	window.</li>
 </ul>
 
+<h2>Update Check</h2>
+<ul>
+	<li><b>Check for Updates</b>: Off by default. When On, the gateway asks the
+	openhac4 GitHub releases page once a day whether a newer version exists and
+	appends the result to <b>Driver Version</b>: "Update available: x.y.z" or
+	"Up to Date". This is a single HTTPS request to api.github.com; nothing about
+	your system is sent, and nothing is downloaded or installed. Updates are
+	applied manually through Composer.</li>
+</ul>
+
 <h2>Troubleshooting</h2>
 <ul>
 	<li><b>Status mentions "authentication failed"</b>: the token is wrong, expired, or was

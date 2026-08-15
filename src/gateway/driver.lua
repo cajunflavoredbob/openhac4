@@ -1450,6 +1450,85 @@ do -- property change handlers (spaces become underscores in the OPC keys)
 	-- Minutes) are registered by the debug module itself
 end
 
+do -- update check (opt-in, default Off; one HTTPS GET to api.github.com)
+	local UPDATE_API = 'https://api.github.com/repos/cajunflavoredbob/openhac4/releases/latest'
+
+	gUpdateStatus = nil -- suffix shown after the version in Driver Version
+
+	local function driverSemver ()
+		local semver
+		pcall (function () semver = C4:GetDriverConfigInfo ('semver') end)
+		return tostring (semver or '')
+	end
+
+	function ShowDriverVersion ()
+		local v = driverSemver ()
+		UpdateProperty ('Driver Version', v .. (gUpdateStatus or ''))
+	end
+
+	-- true when remote (x.y.z) is newer than local, compared component-wise
+	local function isNewer (remote, current)
+		local r = {remote:match ('^(%d+)%.(%d+)%.(%d+)')}
+		local c = {current:match ('^(%d+)%.(%d+)%.(%d+)')}
+		if (#r < 3 or #c < 3) then return false end
+		for i = 1, 3 do
+			local rn, cn = tonumber (r [i]), tonumber (c [i])
+			if (rn > cn) then return true end
+			if (rn < cn) then return false end
+		end
+		return false
+	end
+
+	function CheckForUpdate ()
+		if (Properties ['Check for Updates'] ~= 'On') then return end
+		local ok = pcall (function ()
+			-- api.github.com rejects requests without a User-Agent
+			C4:urlGet (UPDATE_API, {
+				['User-Agent'] = 'openhac4',
+				['Accept'] = 'application/vnd.github+json',
+			}, false, function (ticket, data, responseCode)
+				-- late reply after the dealer turned the check off: discard
+				if (Properties ['Check for Updates'] ~= 'On') then return end
+				local tag
+				if (responseCode == 200 and type (data) == 'string') then
+					local msg = jsonDecode (data)
+					tag = msg and type (msg.tag_name) == 'string'
+						and msg.tag_name:gsub ('^v', '') or nil
+				end
+				if (not tag) then
+					gUpdateStatus = ' (Update check failed)'
+					Debug.Warn ('update check failed: HTTP', tostring (responseCode))
+				elseif (isNewer (tag, driverSemver ())) then
+					gUpdateStatus = ' (Update available: ' .. tag .. ')'
+					print ('openhac4: update available: ' .. tag)
+				else
+					gUpdateStatus = ' (Up to Date)'
+				end
+				ShowDriverVersion ()
+			end)
+		end)
+		if (not ok) then
+			gUpdateStatus = ' (Update check unavailable)'
+			ShowDriverVersion ()
+		end
+	end
+
+	function ArmUpdateCheck ()
+		if (Properties ['Check for Updates'] == 'On') then
+			CheckForUpdate ()
+			SetTimer ('UpdateCheck', ONE_DAY, CheckForUpdate, true)
+		else
+			CancelTimer ('UpdateCheck')
+			gUpdateStatus = nil
+			ShowDriverVersion ()
+		end
+	end
+
+	OPC.Check_for_Updates = function ()
+		ArmUpdateCheck ()
+	end
+end
+
 function OnDriverLateInit ()
 	-- Set the gate first, and run the rest under pcall: if any of this throws,
 	-- the driver must still be recoverable by editing a config property. With
@@ -1476,6 +1555,7 @@ function OnDriverLateInit ()
 		Debug.SyncFromProperties ()
 
 		Connect ()
+		ArmUpdateCheck ()
 	end)
 	if (not ok) then
 		-- surface it: a silently inert driver is undiagnosable
