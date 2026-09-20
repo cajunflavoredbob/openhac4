@@ -803,8 +803,17 @@ do -- messages from child drivers
 	-- mismatched child is refused outright, named in the Version Mismatch
 	-- property, and told why (its Gateway Status shows the mismatch too).
 	gVersionMismatch = gVersionMismatch or {} -- deviceId -> {v, entity}
+	gSemverUnreadable = false -- latches the fail-open warning in versionAccepted
 
 	local function updateMismatchProperty ()
+		-- 'None' would read as "every driver matches", which is not what an
+		-- unenforced gateway means.
+		if (gSemverUnreadable) then
+			UpdateProperty ('Version Mismatch',
+				'NOT ENFORCED - this gateway cannot read its own version, so ' ..
+				'child drivers are being accepted without a version check')
+			return
+		end
 		local ids = {}
 		for id in pairs (gVersionMismatch) do ids [#ids + 1] = id end
 		if (#ids == 0) then
@@ -822,9 +831,41 @@ do -- messages from child drivers
 			': ' .. table.concat (parts, '; ') .. more)
 	end
 
+	-- Exposed for OnDriverLateInit. The table is empty in a fresh Lua state but
+	-- Director persists the property value, so without a write at load a
+	-- resolved mismatch keeps reading BLOCKED.
+	ResetMismatchProperty = updateMismatchProperty
+
 	local function versionAccepted (deviceId, entityId, tParams)
 		local childVer = tostring (tParams.version or 'unknown')
 		local gv = DriverSemver ()
+		-- Fail open when our own version is unreadable: comparing against an
+		-- empty string refuses every child in the project for a fault that is
+		-- ours. isNewer and c4lib's VersionCheck fail safe the same way.
+		if (gv == '') then
+			if (not gSemverUnreadable) then
+				gSemverUnreadable = true
+				-- The manifest is parsed before this script runs, so an empty
+				-- read means the element is missing, not late: reinstall, not
+				-- reload.
+				print ('openhac4: this gateway cannot read its own version, so ' ..
+					'child drivers are being accepted without a version check. ' ..
+					'Re-add the gateway driver from a freshly downloaded .c4z.')
+				-- surface it where a dealer will actually see it
+				updateMismatchProperty ()
+			end
+			-- Defensive: the read is deterministic, so this should be
+			-- unreachable. Kept so the property cannot name a device that is
+			-- being accepted.
+			if (gVersionMismatch [deviceId]) then
+				gVersionMismatch [deviceId] = nil
+			end
+			return true
+		end
+		if (gSemverUnreadable) then
+			gSemverUnreadable = false
+			updateMismatchProperty ()
+		end
 		if (childVer == gv) then
 			if (gVersionMismatch [deviceId]) then
 				gVersionMismatch [deviceId] = nil
@@ -840,10 +881,43 @@ do -- messages from child drivers
 				' does not match gateway ' .. gv ..
 				'. All openhac4 drivers must run the same version; update them together.')
 		end
+		-- Bookkeeping before both sends: either can throw on a dead device id.
 		gVersionMismatch [deviceId] = {v = childVer, entity = tostring (entityId)}
 		updateMismatchProperty ()
-		C4:SendToDevice (deviceId, 'OPENHAC4_VERSION_MISMATCH',
+
+		-- Revoke any registration this device holds, so the offline push below
+		-- is the last word: otherwise the next state change overwrites it.
+		local held = gChildEntities [deviceId]
+		if (held) then
+			gChildEntities [deviceId] = nil
+			if (gRegistrations [held]) then
+				gRegistrations [held] [deviceId] = nil
+				if (next (gRegistrations [held]) == nil) then
+					gRegistrations [held] = nil
+				end
+			end
+		end
+
+		local sentMismatch = pcall (C4.SendToDevice, C4, deviceId,
+			'OPENHAC4_VERSION_MISMATCH',
 			{gateway_version = gv, gateway_id = gatewayId ()})
+		if (not sentMismatch) then
+			print ('openhac4: could not notify device ' .. deviceId ..
+				' of the version mismatch')
+		end
+		-- Drive the refused child offline; it would otherwise keep displaying
+		-- its last state while every command is dropped.
+		--
+		-- Via the state push, not the message above: a pre-1.2.0 child has no
+		-- OPENHAC4_VERSION_MISMATCH handler and drops it silently, and that is
+		-- the cohort a 1.2.0+ gateway refuses. Every version handles STATE.
+		-- Report: a lost push leaves the child showing stale state while the
+		-- property reads BLOCKED.
+		local ok, err = pcall (sendStateToChild, deviceId, entityId, nil)
+		if (not ok) then
+			print ('openhac4: could not drive refused device ' .. deviceId ..
+				' offline: ' .. tostring (err))
+		end
 		return false
 	end
 
@@ -853,6 +927,29 @@ do -- messages from child drivers
 		if (not (deviceId and entityId)) then
 			return
 		end
+
+		-- Children re-register every two minutes, which doubles as a recovery
+		-- tick: if a reconnect timer ever failed to arm (scheduleReconnect
+		-- leaves gReconnectPending clear on a SetTimer failure), this is the
+		-- recurring path that gets the gateway retrying again. offlineFired
+		-- means the socket is definitively dead, not mid-connect, so this never
+		-- aborts a healthy in-flight handshake; gWS is nil when the driver is
+		-- unconfigured, so it never nags an unconfigured state either.
+		--
+		-- Ahead of the version gate on purpose: a refused child still ticks,
+		-- and gating this on acceptance removes the net in the one state that
+		-- needs it, where every child is refused.
+		-- pcall: this runs ahead of the registration bookkeeping, so a throw
+		-- would leave an otherwise-acceptable child unregistered.
+		if (gWS and gWS.offlineFired and not gWS.running
+			and not gReconnectPending and not gSuppressReconnect) then
+			-- report it: a silent failure looks identical to a healthy tick
+			local ok, err = pcall (scheduleReconnect)
+			if (not ok) then
+				print ('openhac4: reconnect recovery failed: ' .. tostring (err))
+			end
+		end
+
 		if (not versionAccepted (deviceId, entityId, tParams)) then
 			return
 		end
@@ -869,6 +966,19 @@ do -- messages from child drivers
 		gChildEntities [deviceId] = entityId
 		gRegistrations [entityId] = gRegistrations [entityId] or {}
 		gRegistrations [entityId] [deviceId] = true
+
+		-- Acknowledge acceptance. A 1.2.1+ child latches its mismatch banner and
+		-- cannot release it from the state channel, since the refusal path pushes
+		-- a synthetic 'unavailable' that looks the same as a real one. Older
+		-- children have no handler and ignore this.
+		--
+		-- pcall: a throw would abort the handler with the registration written
+		-- but the import bookkeeping below not cleared.
+		if (not pcall (C4.SendToDevice, C4, deviceId, 'OPENHAC4_ACCEPTED',
+				{gateway_id = gatewayId ()})) then
+			print ('openhac4: could not acknowledge registration to device ' ..
+				deviceId)
+		end
 
 		-- this child is now configured, so clear any import bookkeeping for it
 		gPendingImport [deviceId] = nil
@@ -893,17 +1003,6 @@ do -- messages from child drivers
 			sendStateToChild (deviceId, entityId, gStates [entityId])
 		end
 
-		-- Children re-register every two minutes, which doubles as a recovery
-		-- tick: if a reconnect timer ever failed to arm (scheduleReconnect
-		-- leaves gReconnectPending clear on a SetTimer failure), this is the
-		-- recurring path that gets the gateway retrying again. offlineFired
-		-- means the socket is definitively dead, not mid-connect, so this never
-		-- aborts a healthy in-flight handshake; gWS is nil when the driver is
-		-- unconfigured, so it never nags an unconfigured state either.
-		if (gWS and gWS.offlineFired and not gWS.running
-			and not gReconnectPending and not gSuppressReconnect) then
-			scheduleReconnect ()
-		end
 	end
 
 	EC.OPENHAC4_UNREGISTER = function (tParams)
@@ -1521,6 +1620,15 @@ do -- update check (opt-in, default Off; one HTTPS GET to api.github.com)
 
 	function ShowDriverVersion ()
 		local v = DriverSemver ()
+		if (v == '') then
+			-- The fallback belongs here, not in OnDriverLateInit: ArmUpdateCheck
+			-- calls this at load and would overwrite a value computed there.
+			-- DriverSemver still returns '' so enforcement keeps failing open
+			-- rather than matching children against the <version> integer.
+			pcall (function ()
+				v = tostring (C4:GetDriverConfigInfo ('version') or '')
+			end)
+		end
 		UpdateProperty ('Driver Version', v .. (gUpdateStatus or ''))
 	end
 
@@ -1601,16 +1709,16 @@ function OnDriverLateInit ()
 		PersistData = PersistData or {}
 		PersistData.AreaRooms = PersistData.AreaRooms or {}
 
-		local semver
-		pcall (function ()
-			semver = C4:GetDriverConfigInfo ('semver')
-		end)
-		if (not semver or semver == '') then
-			pcall (function ()
-				semver = tostring (C4:GetDriverConfigInfo ('version'))
-			end)
-		end
-		UpdateProperty ('Driver Version', tostring (semver or ''))
+		-- Keep this call: it carries the empty-semver fallback, and with Check
+		-- for Updates On nothing else writes the property synchronously at load.
+		ShowDriverVersion ()
+
+		-- before the render below, so an unreadable version says so from load
+		gSemverUnreadable = (DriverSemver () == '')
+
+		-- Director persisted the property value but this Lua state's table is
+		-- empty, so render it once at load.
+		ResetMismatchProperty ()
 
 		-- sync logging config from saved properties before anything logs
 		Debug.SyncFromProperties ()

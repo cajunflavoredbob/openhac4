@@ -1,5 +1,35 @@
 # Changelog
 
+## 1.2.1
+- A driver refused over a version mismatch is now driven offline: its Entity
+  Status reads "unavailable" and the drivers that report availability to
+  Control4 (lock, alarm, light, media source) report it. Before this a refused
+  driver kept whatever state it last held, so a lock still read "locked" and
+  every command was dropped with nothing to show for it. The gateway does this
+  by pushing the offline state itself, so it also reaches drivers older than
+  1.2.0, which have no way to report a mismatch on their own. Most remaining
+  driver types still show their last known value in Navigator and reflect the
+  refusal only in Composer. The garage driver is the exception and the worse
+  case: going offline opens both of its contacts, which the bound Control4
+  garage proxy reads as in transit, so a refused garage door shows as opening
+  or closing until the drivers are updated.
+- The gateway no longer enforces versions when it cannot read its own version.
+  It previously compared against an empty value and refused every driver in the
+  project, blaming each of them for a fault that was the gateway's.
+- The Version Mismatch property is re-established when the gateway loads. A
+  mismatch resolved while the gateway was restarting used to leave the property
+  reading BLOCKED permanently, which is what updating everything at once causes.
+- A refused driver no longer overwrites its own mismatch banner with "Gateway
+  Found" every two minutes.
+- The registration tick still prompts a reconnect when a driver is refused, so a
+  half-updated project can recover its Home Assistant connection on its own.
+- Gateway: Driver Version falls back to the numeric version when the semantic
+  version cannot be read, instead of displaying blank.
+- Gateway documentation: the changelog tab lists the real release history, the
+  Version Mismatch entry describes what a refused driver actually shows, and the
+  update instructions say to update every openhac4 driver back to back and warn
+  that from 1.2.0 onwards no update order avoids the mixed-version window.
+
 ## 1.2.0
 - Strict version enforcement: the gateway refuses child drivers whose version
   does not exactly match its own. Refused drivers are named in the gateway's

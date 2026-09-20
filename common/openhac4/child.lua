@@ -38,6 +38,21 @@ local gUnavailable = nil -- nil until first state; true/false thereafter
 local gSeenOnline = false -- true once the entity has been reported available
 local gDecodeWarned = false -- latches the undecodable-state warning
 local gGatewayOnline = nil -- nil unknown, true/false from gateway broadcast
+-- Set by the version-mismatch handler, released only by OPENHAC4_ACCEPTED.
+-- Register() consults it so the banner is not overwritten with 'Gateway Found'
+-- every tick. The release must be that message and not a state push: the
+-- gateway marks a refused driver unavailable through the state channel, so an
+-- 'unavailable' push cannot be told apart from a genuinely dead entity.
+local gVersionMismatched = false
+
+-- Wording once the latch is released. Shared by the two release sites.
+local function setGatewayStatusFound ()
+	if (gGatewayOnline ~= false) then
+		UpdateProperty ('Gateway Status', 'Gateway Found')
+	else
+		UpdateProperty ('Gateway Status', 'Gateway Offline')
+	end
+end
 
 local jsonEncode = Proto.jsonEncode
 
@@ -295,8 +310,9 @@ function Child.Register ()
 		return
 	end
 	-- the gateway broadcast owns the online/offline wording; don't overwrite
-	-- a known-offline state just because the driver exists in the project
-	if (gGatewayOnline ~= false) then
+	-- a known-offline state just because the driver exists in the project, and
+	-- don't overwrite a version-mismatch banner we have not been released from
+	if (gGatewayOnline ~= false and not gVersionMismatched) then
 		UpdateProperty ('Gateway Status', 'Gateway Found')
 	end
 
@@ -315,6 +331,15 @@ function Child.Register ()
 	end
 
 	if (entity == '') then
+		-- This returns before registering, so no OPENHAC4_ACCEPTED will arrive
+		-- to release the banner. A driver with no entity controls nothing.
+		if (gVersionMismatched) then
+			gVersionMismatched = false
+			-- Both directions: a refused child gets no status broadcasts, so
+			-- gGatewayOnline is frozen at whatever it last saw. Clearing the
+			-- latch without writing would strand the banner on screen.
+			setGatewayStatusFound ()
+		end
 		-- keep the ENTITY_ID variable in sync so a released entity is offered
 		-- again by the import (claimedEntities reads this variable)
 		C4:SetVariable ('ENTITY_ID', '')
@@ -336,7 +361,8 @@ function Child.Register ()
 	end
 end
 
--- this driver's own semver, cached after the first successful read
+-- this driver's own semver, read once and cached. The cache covers a failed
+-- read: the manifest is parsed before this script runs, so empty means absent.
 local gSemver = nil
 function Child.Semver ()
 	if (gSemver == nil) then
@@ -483,9 +509,18 @@ function Child.Setup (opts)
 	-- say so plainly instead of sitting at "Waiting for Home Assistant"
 	EC.OPENHAC4_VERSION_MISMATCH = function (tParams)
 		if (not fromGateway (tParams)) then return end
+		gVersionMismatched = true
 		local gv = tostring (tParams.gateway_version or 'unknown')
 		UpdateProperty ('Gateway Status', 'VERSION MISMATCH - gateway is ' .. gv ..
 			', this driver is ' .. Child.Semver () .. '; update all openhac4 drivers together')
+	end
+
+	-- gateway accepted the registration: release the mismatch banner
+	EC.OPENHAC4_ACCEPTED = function (tParams)
+		if (not fromGateway (tParams)) then return end
+		if (not gVersionMismatched) then return end
+		gVersionMismatched = false
+		setGatewayStatusFound ()
 	end
 
 	EC.OPENHAC4_ENTITIES = function (tParams)

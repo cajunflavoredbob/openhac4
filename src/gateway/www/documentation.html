@@ -72,15 +72,29 @@ gateway to be installed and connected first.</p>
 	applied manually: download the new <code>.c4z</code> files from
 	<a href="https://github.com/cajunflavoredbob/openhac4/releases">github.com/cajunflavoredbob/openhac4/releases</a>
 	and load them with Driver &gt; Add or Update Driver or Agent.</li>
+	<li><b>Update every openhac4 driver, not just this one.</b> The gateway only
+	accepts children running its exact version, so a project left half updated
+	stops working: no state reaches the children and no command reaches Home
+	Assistant. Only this gateway reports that an update exists, so it is easy to
+	update it alone by mistake. Load all the new <code>.c4z</code> files into
+	Composer first, then update every openhac4 driver in the project back to
+	back, so the mixed-version window is as short as possible. From 1.2.0
+	onwards the gateway enforces the match in both directions, so there is no
+	update order that avoids the window: expect the devices to go unavailable
+	until the last driver is updated.</li>
 </ul>
 
 <h2>Troubleshooting</h2>
 <ul>
 	<li><b>Version Mismatch property is not "None"</b>: every openhac4 driver
 	must run the exact same version as the gateway. The property names the
-	device ids and versions being refused; their own Gateway Status says the
-	same. Update every openhac4 <code>.c4z</code> together and the entries
-	clear as each driver re-registers.</li>
+	device ids and versions being refused, up to five of them plus a count.
+	A refused driver is driven offline, so its Entity Status reads
+	"unavailable" and its devices stop responding. On a refused driver running
+	1.2.0 or newer, its own Gateway Status also names the mismatch; an older
+	driver cannot report it, so the version shown here is the one to trust and
+	refused drivers older than 1.2.0 list as "unknown". Update every openhac4
+	<code>.c4z</code> and the entries clear as each driver re-registers.</li>
 	<li><b>Status mentions "authentication failed"</b>: the token is wrong, expired, or was
 	revoked. Create a new token and paste it again. The driver reconnects
 	automatically when the property changes.</li>
@@ -128,5 +142,14 @@ gateway to be installed and connected first.</p>
 
 <h2>Changelog</h2>
 <ul>
-	<li>{{SEMVER}} - Initial public release</li>
+	<li>This driver is version {{SEMVER}}. The full history for every release is
+	in CHANGELOG.md in the repository.</li>
+	<li>1.2.1 - A refused driver is now driven offline instead of displaying
+	stale state. Version enforcement is skipped when the gateway cannot read
+	its own version. The Version Mismatch property is re-established on load.</li>
+	<li>1.2.0 - Strict version enforcement: the gateway refuses child drivers
+	whose version does not match its own.</li>
+	<li>1.1.1 - The update-available message points at the GitHub releases page.</li>
+	<li>1.1.0 - Opt-in update check.</li>
+	<li>1.0.0 - Initial public release</li>
 </ul>
