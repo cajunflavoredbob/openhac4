@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.2.2
+- Every driver's Documentation tab now states its own version and points at the
+  full changelog, instead of listing a fixed entry that went stale the first
+  time the version moved. All 17 drivers use the same wording.
+- README: added an Updating section stating that all openhac4 drivers must run
+  the same version, that only the gateway reports an available update, and that
+  a half-updated project stops working until the last driver is done.
+
 ## 1.2.1
 - A driver refused over a version mismatch is now driven offline: its Entity
   Status reads "unavailable" and the drivers that report availability to
