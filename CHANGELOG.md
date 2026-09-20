@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.2.3
+- README: the update guidance now says that the no-safe-order rule applies from
+  1.2.0 onwards, and that a site still on 1.1.1 or earlier should update the
+  children first, since a gateway that old keeps serving them. It also says
+  what a Version Mismatch reading of NOT ENFORCED means and how to clear it.
+- Gateway documentation: added a troubleshooting entry for the NOT ENFORCED
+  state, in which the gateway cannot read its own version and accepts every
+  child unchecked. The remedy is to re-add the gateway from a fresh package.
+  The existing entry is now titled by the BLOCKED reading it describes, so the
+  two no longer overlap.
+- The 1.2.2 notes did not say that the gateway's Documentation tab dropped its
+  per-release history list in favour of the same version line the children
+  carry. The full history is this file.
+
 ## 1.2.2
 - Every driver's Documentation tab now states its own version and points at the
   full changelog, instead of listing a fixed entry that went stale the first

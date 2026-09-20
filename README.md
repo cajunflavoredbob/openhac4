@@ -46,11 +46,16 @@ state reaches it and no command reaches Home Assistant.
 
 Only the gateway reports that an update exists, so it is easy to update it
 alone by mistake. Load all the new `.c4z` files into Composer first, then
-update every openhac4 driver in the project back to back. There is no update
-order that avoids the gap, so expect the devices to be unavailable until the
-last driver is done.
+update every openhac4 driver in the project back to back. From 1.2.0 onwards
+the gateway enforces the match in both directions, so there is no update order
+that avoids the gap: expect the devices to be unavailable until the last driver
+is done. Coming from 1.1.1 or earlier, update the children first; a gateway
+that old ignores their version and keeps serving them until it is updated last.
 
 The gateway's **Version Mismatch** property names any driver it is refusing.
+If it reads **NOT ENFORCED**, the gateway could not read its own version and
+is accepting every driver unchecked; re-add the gateway from a freshly
+downloaded `.c4z`.
 
 ## Layout
 

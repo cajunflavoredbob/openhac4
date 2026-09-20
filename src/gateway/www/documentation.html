@@ -86,7 +86,7 @@ gateway to be installed and connected first.</p>
 
 <h2>Troubleshooting</h2>
 <ul>
-	<li><b>Version Mismatch property is not "None"</b>: every openhac4 driver
+	<li><b>Version Mismatch property reads "BLOCKED"</b>: every openhac4 driver
 	must run the exact same version as the gateway. The property names the
 	device ids and versions being refused, up to five of them plus a count.
 	A refused driver is driven offline, so its Entity Status reads
@@ -95,6 +95,12 @@ gateway to be installed and connected first.</p>
 	driver cannot report it, so the version shown here is the one to trust and
 	refused drivers older than 1.2.0 list as "unknown". Update every openhac4
 	<code>.c4z</code> and the entries clear as each driver re-registers.</li>
+	<li><b>Version Mismatch property reads "NOT ENFORCED"</b>: this gateway
+	cannot read its own version, so it is accepting every child driver without
+	a version check and a mixed-version project will run without complaint.
+	Updating the children does not clear this. Re-add the gateway from a
+	freshly downloaded <code>.c4z</code>; reloading it will not help, because
+	the version comes from the driver package itself.</li>
 	<li><b>Status mentions "authentication failed"</b>: the token is wrong, expired, or was
 	revoked. Create a new token and paste it again. The driver reconnects
 	automatically when the property changes.</li>
